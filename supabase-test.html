@@ -8,48 +8,79 @@
 </head>
 <body>
   <h2>GoGo Maps - Supabase Connection Test</h2>
-  <p id="status">Checking connection...</p>
-  <div id="results"></div>
+
+  <h3>Businesses</h3>
+  <p id="business-status">Checking businesses...</p>
+  <ul id="business-list"></ul>
+
+  <h3>Active Promotions</h3>
+  <p id="promotion-status">Checking promotions...</p>
+  <ul id="promotion-list"></ul>
 
   <script>
     const url = "https://adifwwlmdditbdxjwbjn.supabase.co";
     const key = "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH";
 
-    async function testConnection() {
+    async function loadData(table) {
+      const response = await fetch(
+        url + "/rest/v1/" + table + "?select=*&limit=20",
+        { headers: { apikey: key } }
+      );
+
+      if (!response.ok) {
+        throw new Error("HTTP " + response.status);
+      }
+
+      return response.json();
+    }
+
+    async function testDatabase() {
       try {
-        const response = await fetch(
-          url + "/rest/v1/businesses?select=name,category,address&limit=10",
-          {
-            headers: {
-              "apikey": key
-            }
-          }
-        );
+        const businesses = await loadData("businesses");
 
-        if (!response.ok) {
-          throw new Error("HTTP " + response.status);
-        }
+        document.getElementById("business-status").textContent =
+          "Businesses connected successfully!";
 
-        const businesses = await response.json();
+        const businessList = document.getElementById("business-list");
 
-        document.getElementById("status").textContent =
-          "Connected successfully!";
-
-        const list = document.createElement("ul");
         businesses.forEach(function(business) {
           const item = document.createElement("li");
           item.textContent =
             business.name + " - " + (business.category || "");
-          list.appendChild(item);
+          businessList.appendChild(item);
         });
-        document.getElementById("results").appendChild(list);
       } catch (error) {
-        document.getElementById("status").textContent =
-          "Connection failed: " + error.message;
+        document.getElementById("business-status").textContent =
+          "Business connection failed: " + error.message;
+      }
+
+      try {
+        const promotions = await loadData("promotions");
+
+        document.getElementById("promotion-status").textContent =
+          "Promotions connected successfully!";
+
+        const promotionList = document.getElementById("promotion-list");
+
+        promotions.forEach(function(promotion) {
+          const item = document.createElement("li");
+          item.textContent =
+            promotion.offer_title + " - " +
+            (promotion.offer_description || "");
+          promotionList.appendChild(item);
+        });
+
+        if (promotions.length === 0) {
+          document.getElementById("promotion-status").textContent =
+            "Connected successfully, but no active promotions are visible.";
+        }
+      } catch (error) {
+        document.getElementById("promotion-status").textContent =
+          "Promotion connection failed: " + error.message;
       }
     }
 
-    testConnection();
+    testDatabase();
   </script>
 </body>
 </html>
