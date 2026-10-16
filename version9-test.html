@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoGo Maps — Version 9 Test</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f6f9;
+  color: #173145;
+}
+
+header {
+  background: #102c40;
+  color: white;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+h1 { margin: 0; font-size: 23px; }
+header small { color: #c6dce9; }
+
+button, .btn {
+  background: #0876b9;
+  color: white;
+  border: none;
+  padding: 11px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+button.secondary {
+  background: #e1edf4;
+  color: #153a50;
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.wrap {
+  max-width: 1300px;
+  margin: auto;
+  padding: 14px;
+}
+
+.notice {
+  background: #fff3d2;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.toolbar input {
+  flex: 1;
+  min-width: 170px;
+  padding: 12px;
+  border: 1px solid #bed0dc;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 330px 1fr;
+  gap: 12px;
+}
+
+.panel {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+#map {
+  height: 70vh;
+  border-radius: 12px;
+}
+
+.item {
+  border-bottom: 1px solid #e4e9ee;
+  padding: 12px 4px;
+  cursor: pointer;
+}
+
+.item h3 {
+  margin: 0 0 5px;
+  font-size: 16px;
+}
+
+.muted {
+  color: #607887;
+  font-size: 13px;
+}
+
+.pill {
+  background: #ffe0df;
+  color: #a32626;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.red { color: #b72b2b; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: #0009;
+  z-index: 2000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+
+.modal.open { display: flex; }
+
+.dialog {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  width: 100%;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.offer {
+  background: #fff5f3;
+  border: 1px solid #f0c7c3;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+
+.promo-media {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.media-cell {
+  border: 1px solid #dce6ed;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  min-width: 0;
+}
+
+.media-cell img,
+.media-cell video {
+  width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+}
+
+.media-cell h4 {
+  font-size: 12px;
+}
+
+.pin {
+  width: 26px;
+  height: 36px;
+  filter: drop-shadow(0 2px 2px #555);
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #687b88;
+}
+
+@media(max-width: 760px) {
+  .layout { grid-template-columns: 1fr; }
+  #map { height: 48vh; }
+  .panel { max-height: 38vh; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <h1>📍 GoGo Maps — Batumi</h1>
+    <small>Discover local businesses and exclusive specials</small>
+  </div>
+  <button class="secondary" disabled>
+    🔒 Private office — coming soon
+  </button>
+</header>
+
+<main class="wrap">
+
+<div class="notice">
+  VERSION 9 TEST — Connected to the GoGo Maps online database.
+  Staff management is not yet enabled.
+</div>
+
+<div class="toolbar">
+  <input id="search"
+    placeholder="Search businesses and promotions in English">
+
+  <button id="allBtn" class="secondary">
+    All businesses
+  </button>
+
+  <button id="specialBtn">
+    🔴 Specials only
+  </button>
+
+  <button id="nearBtn" class="secondary">
+    Find me
+  </button>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <p id="status">Connecting to database...</p>
+    <b id="count"></b>
+    <div id="results"></div>
+  </div>
+
+  <div id="map"></div>
+</div>
+
+</main>
+
+<footer>
+  GoGo Maps Version 9 Test · Map © OpenStreetMap contributors
+</footer>
+
+<div id="detailModal" class="modal">
+  <div class="dialog">
+    <button class="secondary" id="closeBtn"
+      style="float:right">✕</button>
+    <div id="detail"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const supabaseUrl =
+  "https://adifwwlmdditbdxjwbjn.supabase.co";
+
+const supabaseKey =
+  "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH";
+
+const $ = id => document.getElementById(id);
+
+let places = [];
+let specialsOnly = false;
+
+const map = L.map("map").setView(
+  [41.6168, 41.6367], 13
+);
+
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap contributors"
+  }
+).addTo(map);
+
+const layer = L.layerGroup().addTo(map);
+
+function makePin(color) {
+  return L.divIcon({
+    className: "",
+    html: `
+      <svg class="pin" viewBox="0 0 26 36"
+        xmlns="http://www.w3.org/2000/svg">
+        <path d="M13 1 C6 1 1 6 1 13
+          C1 22 13 35 13 35
+          C13 35 25 22 25 13
+          C25 6 20 1 13 1 Z"
+          fill="${color}"
+          stroke="white" stroke-width="2"/>
+        <circle cx="13" cy="13" r="5" fill="white"/>
+      </svg>`,
+    iconSize: [26, 36],
+    iconAnchor: [13, 35]
+  });
+}
+
+const bluePin = makePin("#1677ff");
+const redPin = makePin("#e32636");
+
+async function getData(table) {
+  const response = await fetch(
+    supabaseUrl + "/rest/v1/" + table + "?select=*",
+    { headers: { apikey: supabaseKey } }
+  );
+
+  if (!response.ok) {
+    throw new Error(table + ": HTTP " + response.status);
+  }
+
+  return response.json();
+}
+
+function safeUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function addText(parent, tag, value) {
+  const element = document.createElement(tag);
+  element.textContent = value || "";
+  parent.appendChild(element);
+  return element;
+}
+
+function openDetail(id) {
+  const place = places.find(p => p.id === id);
+  if (!place) return;
+
+  const detail = $("detail");
+  detail.replaceChildren();
+
+  addText(detail, "h2", place.name);
+  addText(detail, "p",
+    (place.category || "Business") + " · " +
+    (place.address || "Batumi")
+  );
+
+  if (place.phone) {
+    addText(detail, "p", "☎ " + place.phone);
+  }
+
+  if (place.promotion) {
+    const offer = document.createElement("div");
+    offer.className = "offer";
+
+    addText(offer, "h2",
+      "🔴 " + place.promotion.offer_title);
+
+    addText(offer, "p",
+      place.promotion.offer_description);
+
+    addText(offer, "p",
+      "Valid: " + place.promotion.start_date +
+      " to " + place.promotion.end_date);
+
+    detail.appendChild(offer);
+
+    const media = document.createElement("div");
+    media.className = "promo-media";
+
+    const logoCell = document.createElement("div");
+    logoCell.className = "media-cell";
+    addText(logoCell, "h4", "Business logo");
+    addText(logoCell, "p", "Coming soon");
+
+    const videoCell = document.createElement("div");
+    videoCell.className = "media-cell";
+    addText(videoCell, "h4", "Promotional video");
+
+    const videoUrl = safeUrl(
+      place.promotion.promotional_video_url
+    );
+
+    if (videoUrl) {
+      const link = document.createElement("a");
+      link.href = videoUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Watch video";
+      videoCell.appendChild(link);
+    } else {
+      addText(videoCell, "p", "Coming soon");
+    }
+
+    const qrCell = document.createElement("div");
+    qrCell.className = "media-cell";
+    addText(qrCell, "h4", "Show QR in store");
+    addText(qrCell, "p", "Coming soon");
+
+    media.append(logoCell, videoCell, qrCell);
+    detail.appendChild(media);
+
+    const photoUrl = safeUrl(
+      place.promotion.promotional_photo_url
+    );
+
+    if (photoUrl) {
+      const photo = document.createElement("img");
+      photo.src = photoUrl;
+      photo.alt = "Promotion photo";
+      photo.style.cssText =
+        "width:100%;max-height:240px;object-fit:contain;margin-top:12px";
+      detail.appendChild(photo);
+    }
+  } else {
+    addText(detail, "p", "Standard business listing");
+  }
+
+  if (
+    Number.isFinite(place.lat) &&
+    Number.isFinite(place.lon)
+  ) {
+    const directions = document.createElement("a");
+    directions.className = "btn";
+    directions.textContent = "Directions";
+    directions.target = "_blank";
+    directions.rel = "noopener noreferrer";
+    directions.href =
+      "https://www.google.com/maps/dir/?api=1&destination=" +
+      encodeURIComponent(place.lat + "," + place.lon);
+
+    detail.appendChild(directions);
+  }
+
+  $("detailModal").classList.add("open");
+}
+
+function render() {
+  layer.clearLayers();
+  $("results").replaceChildren();
+
+  const query = $("search").value.trim().toLowerCase();
+
+  const found = places.filter(p => {
+    if (specialsOnly && !p.promotion) return false;
+
+    return [
+      p.name,
+      p.category,
+      p.address,
+      p.promotion?.offer_title,
+      p.promotion?.offer_description
+    ].some(value =>
+      String(value || "").toLowerCase().includes(query)
+    );
+  });
+
+  $("count").textContent =
+    found.length + " listings · " +
+    found.filter(p => p.promotion).length +
+    " active specials";
+
+  found.forEach(place => {
+    const item = document.createElement("div");
+    item.className = "item";
+
+    const heading = addText(item, "h3", place.name);
+
+    if (place.promotion) {
+      const badge = document.createElement("span");
+      badge.className = "pill";
+      badge.textContent = " SPECIAL";
+      heading.appendChild(badge);
+    }
+
+    const category = addText(
+      item, "p",
+      (place.category || "Business") +
+      " · " + (place.address || "Batumi")
+    );
+    category.className = "muted";
+
+    if (place.promotion) {
+      const offer = addText(
+        item, "strong",
+        place.promotion.offer_title
+      );
+      offer.className = "red";
+    }
+
+    item.onclick = () => {
+      if (
+        Number.isFinite(place.lat) &&
+        Number.isFinite(place.lon)
+      ) {
+        map.setView([place.lat, place.lon], 16);
+      }
+      openDetail(place.id);
+    };
+
+    $("results").appendChild(item);
+
+    if (
+      !Number.isFinite(place.lat) ||
+      !Number.isFinite(place.lon)
+    ) return;
+
+    L.marker(
+      [place.lat, place.lon],
+      { icon: place.promotion ? redPin : bluePin }
+    )
+    .addTo(layer)
+    .on("click", () => openDetail(place.id));
+  });
+}
+
+async function loadBusinesses() {
+  try {
+    const businesses = await getData("businesses");
+    const promotions = await getData("promotions");
+
+    places = businesses.map(business => {
+      const matchingPromotions = promotions
+        .filter(p => p.business_id === business.id)
+        .sort((a, b) =>
+          String(b.start_date).localeCompare(
+            String(a.start_date)
+          )
+        );
+
+      return {
+        id: business.id,
+        name: business.name,
+        category: business.category,
+        address: business.address,
+        phone: business.phone,
+        lat: business.latitude == null
+          ? null : Number(business.latitude),
+        lon: business.longitude == null
+          ? null : Number(business.longitude),
+        promotion: matchingPromotions[0] || null
+      };
+    });
+
+    $("status").textContent =
+      "Connected successfully to GoGo Maps database.";
+
+    render();
+  } catch (error) {
+    $("status").textContent =
+      "Database connection failed: " + error.message;
+  }
+}
+
+$("search").oninput = render;
+
+$("allBtn").onclick = () => {
+  specialsOnly = false;
+  render();
+};
+
+$("specialBtn").onclick = () => {
+  specialsOnly = true;
+  render();
+};
+
+$("nearBtn").onclick = () => {
+  if (!navigator.geolocation) {
+    alert("Location is not available.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      map.setView([
+        position.coords.latitude,
+        position.coords.longitude
+      ], 15);
+    },
+    () => alert("Location permission unavailable.")
+  );
+};
+
+$("closeBtn").onclick = () => {
+  $("detailModal").classList.remove("open");
+};
+
+loadBusinesses();
+</script>
+</body>
+</html>
