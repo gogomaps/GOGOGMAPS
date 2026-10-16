@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoGo Maps - Database Test</title>
+</head>
+<body>
+  <h2>GoGo Maps - Supabase Connection Test</h2>
+  <p id="status">Checking connection...</p>
+  <div id="results"></div>
+
+  <script>
+    const url = "https://adifwwlmdditbdxjwbjn.supabase.co";
+    const key = "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH";
+
+    async function testConnection() {
+      try {
+        const response = await fetch(
+          url + "/rest/v1/businesses?select=name,category,address&limit=10",
+          {
+            headers: {
+              "apikey": key
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
+
+        const businesses = await response.json();
+
+        document.getElementById("status").textContent =
+          "Connected successfully!";
+
+        const list = document.createElement("ul");
+        businesses.forEach(function(business) {
+          const item = document.createElement("li");
+          item.textContent =
+            business.name + " - " + (business.category || "");
+          list.appendChild(item);
+        });
+        document.getElementById("results").appendChild(list);
+      } catch (error) {
+        document.getElementById("status").textContent =
+          "Connection failed: " + error.message;
+      }
+    }
+
+    testConnection();
+  </script>
+</body>
+</html>
