@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,10 +7,37 @@
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
-    h2 { text-align: center; margin: 12px; }
-    #status { text-align: center; padding: 8px; }
-    #map { height: 80vh; width: 100%; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 12px;
+    }
+
+    #status {
+      text-align: center;
+      padding: 8px;
+    }
+
+    #map {
+      height: 80vh;
+      width: 100%;
+    }
+
+    .map-pin {
+      width: 26px;
+      height: 36px;
+      display: block;
+      filter: drop-shadow(0 2px 2px #555);
+    }
+
+    .map-pin svg {
+      width: 26px;
+      height: 36px;
+    }
   </style>
 </head>
 <body>
@@ -26,6 +51,7 @@
   <script>
     const supabaseUrl =
       "https://adifwwlmdditbdxjwbjn.supabase.co";
+
     const supabaseKey =
       "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH";
 
@@ -33,13 +59,49 @@
 
     L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      { attribution: "&copy; OpenStreetMap contributors" }
+      {
+        attribution: "&copy; OpenStreetMap contributors"
+      }
     ).addTo(map);
+
+    function makePin(color) {
+      const html = `
+        <div class="map-pin">
+          <svg viewBox="0 0 26 36"
+               xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M13 1 C6 1 1 6 1 13
+                 C1 22 13 35 13 35
+                 C13 35 25 22 25 13
+                 C25 6 20 1 13 1 Z"
+              fill="${color}"
+              stroke="white"
+              stroke-width="2"/>
+            <circle cx="13" cy="13" r="5"
+                    fill="white"/>
+          </svg>
+        </div>`;
+
+      return L.divIcon({
+        html: html,
+        className: "",
+        iconSize: [26, 36],
+        iconAnchor: [13, 35],
+        popupAnchor: [0, -32]
+      });
+    }
+
+    const bluePin = makePin("#1677ff");
+    const redPin = makePin("#e32636");
 
     async function getData(table) {
       const response = await fetch(
         supabaseUrl + "/rest/v1/" + table + "?select=*",
-        { headers: { apikey: supabaseKey } }
+        {
+          headers: {
+            apikey: supabaseKey
+          }
+        }
       );
 
       if (!response.ok) {
@@ -58,33 +120,43 @@
 
         businesses.forEach(function(business) {
           if (business.latitude == null ||
-              business.longitude == null) return;
+              business.longitude == null) {
+            return;
+          }
 
           const promotion = promotions.find(function(p) {
             return p.business_id === business.id;
           });
 
-          const isPromotion = !!promotion;
-
-          const marker = L.circleMarker(
+          const marker = L.marker(
             [business.latitude, business.longitude],
             {
-              radius: 10,
-              color: isPromotion ? "red" : "blue",
-              fillColor: isPromotion ? "red" : "blue",
-              fillOpacity: 0.85
+              icon: promotion ? redPin : bluePin
             }
           ).addTo(map);
 
           const popup = document.createElement("div");
+
           const name = document.createElement("strong");
           name.textContent = business.name;
           popup.appendChild(name);
 
+          if (business.category) {
+            const category = document.createElement("p");
+            category.textContent = business.category;
+            popup.appendChild(category);
+          }
+
+          if (business.address) {
+            const address = document.createElement("p");
+            address.textContent = business.address;
+            popup.appendChild(address);
+          }
+
           if (promotion) {
-            const heading = document.createElement("p");
-            heading.textContent = promotion.offer_title;
-            popup.appendChild(heading);
+            const title = document.createElement("h3");
+            title.textContent = promotion.offer_title;
+            popup.appendChild(title);
 
             const description = document.createElement("p");
             description.textContent =
@@ -99,11 +171,6 @@
         document.getElementById("status").textContent =
           "Connected successfully! " +
           markerCount + " businesses displayed on the map.";
-
-        if (markerCount === 0) {
-          document.getElementById("status").textContent =
-            "Database connected. No businesses have map coordinates yet.";
-        }
 
       } catch (error) {
         document.getElementById("status").textContent =
