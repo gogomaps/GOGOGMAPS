@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoGo Maps - Live Map Test</title>
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    h2 { text-align: center; margin: 12px; }
+    #status { text-align: center; padding: 8px; }
+    #map { height: 80vh; width: 100%; }
+  </style>
+</head>
+<body>
+
+  <h2>GoGo Maps - Live Database Map</h2>
+  <div id="status">Loading businesses and promotions...</div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const supabaseUrl =
+      "https://adifwwlmdditbdxjwbjn.supabase.co";
+    const supabaseKey =
+      "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH";
+
+    const map = L.map("map").setView([41.6168, 41.6367], 13);
+
+    L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      { attribution: "&copy; OpenStreetMap contributors" }
+    ).addTo(map);
+
+    async function getData(table) {
+      const response = await fetch(
+        supabaseUrl + "/rest/v1/" + table + "?select=*",
+        { headers: { apikey: supabaseKey } }
+      );
+
+      if (!response.ok) {
+        throw new Error(table + ": HTTP " + response.status);
+      }
+
+      return response.json();
+    }
+
+    async function loadMap() {
+      try {
+        const businesses = await getData("businesses");
+        const promotions = await getData("promotions");
+
+        let markerCount = 0;
+
+        businesses.forEach(function(business) {
+          if (business.latitude == null ||
+              business.longitude == null) return;
+
+          const promotion = promotions.find(function(p) {
+            return p.business_id === business.id;
+          });
+
+          const isPromotion = !!promotion;
+
+          const marker = L.circleMarker(
+            [business.latitude, business.longitude],
+            {
+              radius: 10,
+              color: isPromotion ? "red" : "blue",
+              fillColor: isPromotion ? "red" : "blue",
+              fillOpacity: 0.85
+            }
+          ).addTo(map);
+
+          const popup = document.createElement("div");
+          const name = document.createElement("strong");
+          name.textContent = business.name;
+          popup.appendChild(name);
+
+          if (promotion) {
+            const heading = document.createElement("p");
+            heading.textContent = promotion.offer_title;
+            popup.appendChild(heading);
+
+            const description = document.createElement("p");
+            description.textContent =
+              promotion.offer_description || "";
+            popup.appendChild(description);
+          }
+
+          marker.bindPopup(popup);
+          markerCount++;
+        });
+
+        document.getElementById("status").textContent =
+          "Connected successfully! " +
+          markerCount + " businesses displayed on the map.";
+
+        if (markerCount === 0) {
+          document.getElementById("status").textContent =
+            "Database connected. No businesses have map coordinates yet.";
+        }
+
+      } catch (error) {
+        document.getElementById("status").textContent =
+          "Connection error: " + error.message;
+      }
+    }
+
+    loadMap();
+  </script>
+</body>
+</html>
