@@ -1,0 +1,23 @@
+{
+  "name": "GoGo Maps \u2014 Explore Batumi",
+  "short_name": "GoGo Maps",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#087ad5",
+  "description": "GoGo Maps: explore Batumi businesses and local offers",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

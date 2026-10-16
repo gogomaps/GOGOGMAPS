@@ -1,0 +1,1 @@
+GoGo Maps website files for GitHub Pages. Upload the files index.html, manifest.webmanifest, sw.js, logo.png, icon-192.png and icon-512.png to the ROOT of your gogo-maps repository. Do not upload this ZIP itself. The initial map focuses on Batumi; additional cities will be added later. Requires an internet connection.
