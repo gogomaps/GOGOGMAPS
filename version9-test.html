@@ -586,7 +586,9 @@ $("nearBtn").onclick = () => {
       map.setView([
         position.coords.latitude,
         position.coords.longitude
-      ], 15);
+      ], 17);
+      if (window.myLocationDot) map.removeLayer(window.myLocationDot);
+      window.myLocationDot =
       L.circleMarker(
   [position.coords.latitude, position.coords.longitude],
   {
