@@ -83,6 +83,9 @@
     .success { color: #167347; }
     .note { color: #637083; font-size: 14px; }
   </style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 </head>
 
 <body>
@@ -169,6 +172,7 @@
         <label for="phone">Telephone</label>
         <input id="phone" type="tel">
 
+        <div id="locationMap" style="height:350px; width:100%; border-radius:10px; margin:15px 0;"></div>
         <label for="latitude">Latitude</label>
         <input
           id="latitude"
@@ -498,6 +502,28 @@
       }
     }
   );
+
+  const locationMap = L.map("locationMap").setView([41.6168, 41.6367], 13);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; OpenStreetMap contributors"
+}).addTo(locationMap);
+
+let selectedLocationMarker = null;
+
+locationMap.on("click", function(event) {
+  const lat = event.latlng.lat;
+  const lng = event.latlng.lng;
+
+  $("latitude").value = lat.toFixed(6);
+  $("longitude").value = lng.toFixed(6);
+
+  if (selectedLocationMarker) {
+    locationMap.removeLayer(selectedLocationMarker);
+  }
+
+  selectedLocationMarker = L.marker([lat, lng]).addTo(locationMap);
+});
 
   checkAccess();
 </script>
