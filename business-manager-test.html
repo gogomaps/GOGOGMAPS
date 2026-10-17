@@ -1,4 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <title>GoGo Maps | Business Manager</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #edf2f7;
+      color: #243247;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #1769aa;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 { margin: 0 0 6px; }
+
+    main {
+      max-width: 780px;
+      margin: 24px auto;
+      padding: 0 15px 40px;
+    }
+
+    section {
+      background: white;
+      padding: 22px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px #00000010;
+    }
+
+    h2 { margin-top: 0; }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 14px 0 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #bdc7d3;
+      border-radius: 7px;
+      font: inherit;
+    }
+
+    textarea { min-height: 90px; }
+
+    button {
+      background: #1769aa;
+      color: white;
+      border: 0;
+      border-radius: 7px;
+      padding: 13px 18px;
+      margin-top: 18px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled { opacity: .6; }
+
+    .secondary { background: #526579; }
+    .hidden { display: none !important; }
+
+    .status {
+      margin-top: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .error { color: #b42318; }
+    .success { color: #167347; }
+    .note { color: #637083; font-size: 14px; }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>GoGo Maps</h1>
+  <div>Private Business Manager — Test Version</div>
+</header>
+
+<main>
+
+  <section id="loginSection">
+    <h2>Staff Sign In</h2>
+
+    <form id="loginForm">
+      <label for="email">Email Address</label>
+      <input
+        id="email"
+        type="email"
+        autocomplete="username"
+        required
+      >
+
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button id="loginBtn" type="submit">
+        Sign In
+      </button>
+    </form>
+  </section>
+
+  <div id="manager" class="hidden">
+
+    <section>
+      <h2>Business Manager</h2>
+      <p id="staffEmail"></p>
+
+      <button
+        id="logoutBtn"
+        class="secondary"
+        type="button">
+        Sign Out
+      </button>
     </section>
+
+    <section>
+      <h2>Add a Business</h2>
+
+      <form id="businessForm">
+
+        <label for="businessName">
+          Business Name
+        </label>
+        <input
+          id="businessName"
+          maxlength="200"
+          required
+        >
+
+        <label for="category">Category</label>
+        <select id="category" required>
+          <option value="">Choose category</option>
+          <option>Restaurant</option>
+          <option>Cafe</option>
+          <option>Hotel</option>
+          <option>Shop</option>
+          <option>Supermarket</option>
+          <option>Entertainment</option>
+          <option>Beauty</option>
+          <option>Health</option>
+          <option>Transport</option>
+          <option>Other</option>
+        </select>
+
+        <label for="address">Address</label>
+        <input id="address" required>
+
+        <label for="phone">Telephone</label>
+        <input id="phone" type="tel">
+
+        <label for="latitude">Latitude</label>
+        <input
+          id="latitude"
+          type="number"
+          step="any"
+          min="-90"
+          max="90"
+          required
+        >
+
+        <label for="longitude">Longitude</label>
+        <input
+          id="longitude"
+          type="number"
+          step="any"
+          min="-180"
+          max="180"
+          required
+        >
+
+        <p class="note">
+          Enter the business coordinates manually
+          for this test. We will add a map location
+          picker later.
+        </p>
+
+        <button id="businessBtn" type="submit">
+          Save Business
+        </button>
+
+      </form>
+    </section>
+
+    <section>
+      <h2>Add a Promotion</h2>
+
+      <form id="promotionForm">
+
+        <label for="businessSelect">
+          Choose Business
+        </label>
+        <select id="businessSelect" required>
+          <option value="">Select a business</option>
+        </select>
+
+        <label for="offerTitle">
+          Promotion Title
+        </label>
+        <input id="offerTitle" required>
+
+        <label for="offerDescription">
+          Promotion Description
+        </label>
+        <textarea
+          id="offerDescription"
+          required></textarea>
+
+        <label for="startDate">Start Date</label>
+        <input
+          id="startDate"
+          type="date"
+          required
+        >
+
+        <label for="endDate">End Date</label>
+        <input
+          id="endDate"
+          type="date"
+          required
+        >
+
+        <button id="promotionBtn" type="submit">
+          Save Promotion
+        </button>
+
+      </form>
+    </section>
+
   </div>
 
   <section>
@@ -6,225 +254,253 @@
       Checking login...
     </p>
   </section>
+
 </main>
 
 <script type="module">
-import { createClient } from
-  "https://esm.sh/@supabase/supabase-js@2";
+  import { createClient } from
+    "https://esm.sh/@supabase/supabase-js@2";
 
-const supabase = createClient(
-  "https://adifwwlmdditbdxjwbjn.supabase.co",
-  "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH"
-);
+  const supabase = createClient(
+    "https://adifwwlmdditbdxjwbjn.supabase.co",
+    "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH"
+  );
 
-const $ = id => document.getElementById(id);
+  const $ = id => document.getElementById(id);
 
-function status(text, error = false) {
-  $("status").textContent = text;
-  $("status").className =
-    "status " + (error ? "error" : "success");
-}
-
-function showLoggedOut() {
-  $("manager").classList.add("hidden");
-  $("loginSection").classList.remove("hidden");
-  $("staffEmail").textContent = "";
-}
-
-async function verifyStaff(user) {
-  if (!user) return false;
-
-  const { data, error } = await supabase
-    .from("staff_users")
-    .select("user_id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (error) throw error;
-  return !!data;
-}
-
-async function showLoggedIn(user) {
-  $("loginSection").classList.add("hidden");
-  $("manager").classList.remove("hidden");
-  $("staffEmail").textContent =
-    "Signed in as: " + (user.email || "");
-
-  await loadBusinesses();
-  status("Authorised staff access confirmed.");
-}
-
-async function checkAccess() {
-  showLoggedOut();
-
-  try {
-    const { data, error } =
-      await supabase.auth.getUser();
-
-    if (error || !data.user) {
-      status("Please sign in.");
-      return;
-    }
-
-    if (!(await verifyStaff(data.user))) {
-      status("This account is not authorised staff.", true);
-      return;
-    }
-
-    await showLoggedIn(data.user);
-  } catch (error) {
-    showLoggedOut();
-    status(error.message, true);
+  function status(text, error = false) {
+    $("status").textContent = text;
+    $("status").className =
+      "status " + (error ? "error" : "success");
   }
-}
 
-$("loginForm").addEventListener("submit", async event => {
-  event.preventDefault();
-  $("loginBtn").disabled = true;
+  function showLoggedOut() {
+    $("manager").classList.add("hidden");
+    $("loginSection").classList.remove("hidden");
+    $("staffEmail").textContent = "";
+  }
 
-  try {
-    const { data, error } =
-      await supabase.auth.signInWithPassword({
-        email: $("email").value.trim(),
-        password: $("password").value
-      });
+  async function verifyStaff(user) {
+    if (!user) return false;
+
+    const { data, error } = await supabase
+      .from("staff_users")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) throw error;
+    return !!data;
+  }
+
+  async function loadBusinesses() {
+    const { data, error } = await supabase
+      .from("businesses")
+      .select("id,name")
+      .order("name");
 
     if (error) throw error;
 
-    $("password").value = "";
+    const select = $("businessSelect");
+    select.replaceChildren();
+    select.add(new Option("Select a business", ""));
 
-    if (!(await verifyStaff(data.user))) {
-      showLoggedOut();
-      status("This account is not authorised staff.", true);
-      return;
-    }
+    (data || []).forEach(business => {
+      select.add(
+        new Option(business.name, business.id)
+      );
+    });
+  }
 
-    await showLoggedIn(data.user);
-  } catch (error) {
+  async function showLoggedIn(user) {
+    $("loginSection").classList.add("hidden");
+    $("manager").classList.remove("hidden");
+
+    $("staffEmail").textContent =
+      "Signed in as: " + (user.email || "");
+
+    await loadBusinesses();
+    status("Authorised staff access confirmed.");
+  }
+
+  async function checkAccess() {
     showLoggedOut();
-    status(error.message, true);
-  } finally {
-    $("loginBtn").disabled = false;
-  }
-});
-
-$("logoutBtn").addEventListener("click", async () => {
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    status(error.message, true);
-    return;
-  }
-
-  showLoggedOut();
-  status("Signed out successfully.");
-});
-
-async function loadBusinesses() {
-  const { data, error } = await supabase
-    .from("businesses")
-    .select("id,name")
-    .order("name");
-
-  if (error) throw error;
-
-  const select = $("businessSelect");
-  select.replaceChildren();
-
-  const blank = new Option("Select a business", "");
-  select.add(blank);
-
-  (data || []).forEach(business => {
-    select.add(new Option(business.name, business.id));
-  });
-}
-
-$("businessForm").addEventListener("submit",
-  async event => {
-    event.preventDefault();
-    $("businessBtn").disabled = true;
 
     try {
-      const { data: userData, error: authError } =
+      const { data, error } =
         await supabase.auth.getUser();
 
-      if (authError || !userData.user ||
-          !(await verifyStaff(userData.user))) {
-        throw new Error("Staff access required.");
+      if (error || !data.user) {
+        status("Please sign in.");
+        return;
       }
 
-      const business = {
-        name: $("businessName").value.trim(),
-        category: $("category").value,
-        address: $("address").value.trim(),
-        phone: $("phone").value.trim(),
-        latitude: Number($("latitude").value),
-        longitude: Number($("longitude").value)
-      };
-
-      const { error } = await supabase
-        .from("businesses")
-        .insert(business);
-
-      if (error) throw error;
-
-      $("businessForm").reset();
-      await loadBusinesses();
-      status("Business saved successfully.");
-    } catch (error) {
-      status(error.message, true);
-    } finally {
-      $("businessBtn").disabled = false;
-    }
-  }
-);
-
-$("promotionForm").addEventListener("submit",
-  async event => {
-    event.preventDefault();
-    $("promotionBtn").disabled = true;
-
-    try {
-      const { data: userData, error: authError } =
-        await supabase.auth.getUser();
-
-      if (authError || !userData.user ||
-          !(await verifyStaff(userData.user))) {
-        throw new Error("Staff access required.");
-      }
-
-      if ($("endDate").value < $("startDate").value) {
-        throw new Error(
-          "End date must not be before start date."
+      if (!(await verifyStaff(data.user))) {
+        status(
+          "This account is not authorised staff.",
+          true
         );
+        return;
       }
 
-      const promotion = {
-        business_id: $("businessSelect").value,
-        offer_title: $("offerTitle").value.trim(),
-        offer_description:
-          $("offerDescription").value.trim(),
-        start_date: $("startDate").value,
-        end_date: $("endDate").value
-      };
+      await showLoggedIn(data.user);
 
-      const { error } = await supabase
-        .from("promotions")
-        .insert(promotion);
-
-      if (error) throw error;
-
-      $("promotionForm").reset();
-      status("Promotion saved successfully.");
     } catch (error) {
+      showLoggedOut();
       status(error.message, true);
-    } finally {
-      $("promotionBtn").disabled = false;
     }
   }
-);
 
-checkAccess();
+  $("loginForm").addEventListener(
+    "submit",
+    async event => {
+      event.preventDefault();
+      $("loginBtn").disabled = true;
+
+      try {
+        const { data, error } =
+          await supabase.auth.signInWithPassword({
+            email: $("email").value.trim(),
+            password: $("password").value
+          });
+
+        if (error) throw error;
+
+        $("password").value = "";
+
+        if (!(await verifyStaff(data.user))) {
+          showLoggedOut();
+          status(
+            "This account is not authorised staff.",
+            true
+          );
+          return;
+        }
+
+        await showLoggedIn(data.user);
+
+      } catch (error) {
+        showLoggedOut();
+        status(error.message, true);
+      } finally {
+        $("loginBtn").disabled = false;
+      }
+    }
+  );
+
+  $("logoutBtn").addEventListener(
+    "click",
+    async () => {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        status(error.message, true);
+        return;
+      }
+
+      showLoggedOut();
+      status("Signed out successfully.");
+    }
+  );
+
+  $("businessForm").addEventListener(
+    "submit",
+    async event => {
+      event.preventDefault();
+      $("businessBtn").disabled = true;
+
+      try {
+        const { data: userData, error: authError } =
+          await supabase.auth.getUser();
+
+        if (
+          authError ||
+          !userData.user ||
+          !(await verifyStaff(userData.user))
+        ) {
+          throw new Error("Staff access required.");
+        }
+
+        const business = {
+          name: $("businessName").value.trim(),
+          category: $("category").value,
+          address: $("address").value.trim(),
+          phone: $("phone").value.trim(),
+          latitude: Number($("latitude").value),
+          longitude: Number($("longitude").value)
+        };
+
+        const { error } = await supabase
+          .from("businesses")
+          .insert(business);
+
+        if (error) throw error;
+
+        $("businessForm").reset();
+        await loadBusinesses();
+
+        status("Business saved successfully.");
+
+      } catch (error) {
+        status(error.message, true);
+      } finally {
+        $("businessBtn").disabled = false;
+      }
+    }
+  );
+
+  $("promotionForm").addEventListener(
+    "submit",
+    async event => {
+      event.preventDefault();
+      $("promotionBtn").disabled = true;
+
+      try {
+        const { data: userData, error: authError } =
+          await supabase.auth.getUser();
+
+        if (
+          authError ||
+          !userData.user ||
+          !(await verifyStaff(userData.user))
+        ) {
+          throw new Error("Staff access required.");
+        }
+
+        if ($("endDate").value < $("startDate").value) {
+          throw new Error(
+            "End date must not be before start date."
+          );
+        }
+
+        const promotion = {
+          business_id: $("businessSelect").value,
+          offer_title: $("offerTitle").value.trim(),
+          offer_description:
+            $("offerDescription").value.trim(),
+          start_date: $("startDate").value,
+          end_date: $("endDate").value
+        };
+
+        const { error } = await supabase
+          .from("promotions")
+          .insert(promotion);
+
+        if (error) throw error;
+
+        $("promotionForm").reset();
+        status("Promotion saved successfully.");
+
+      } catch (error) {
+        status(error.message, true);
+      } finally {
+        $("promotionBtn").disabled = false;
+      }
+    }
+  );
+
+  checkAccess();
 </script>
+
 </body>
 </html>
