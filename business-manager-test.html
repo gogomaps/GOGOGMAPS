@@ -193,6 +193,10 @@
           required
         >
 
+        
+<label for="businessPhoto">Business Photo</label>
+<input type="file" id="businessPhoto" accept="image/*">
+<p class="note">
         <p class="note">
           Enter the business coordinates manually
           for this test. We will add a map location
@@ -424,6 +428,24 @@
         ) {
           throw new Error("Staff access required.");
         }
+let photoUrl = null;
+const photoFile = $("businessPhoto").files[0];
+
+if (photoFile) {
+  const fileName = crypto.randomUUID() + "-" + photoFile.name;
+
+  const { error: uploadError } = await supabase.storage
+    .from("business-photos")
+    .upload(fileName, photoFile);
+
+  if (uploadError) throw uploadError;
+
+  const { data: photoData } = supabase.storage
+    .from("business-photos")
+    .getPublicUrl(fileName);
+
+  photoUrl = photoData.publicUrl;
+}
 
         const business = {
           name: $("businessName").value.trim(),
@@ -431,7 +453,8 @@
           address: $("address").value.trim(),
           phone: $("phone").value.trim(),
           latitude: Number($("latitude").value),
-          longitude: Number($("longitude").value)
+          longitude: Number($("longitude").value),
+          photo_url: photoUrl
         };
 
         const { error } = await supabase
