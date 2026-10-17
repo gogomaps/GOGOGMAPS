@@ -1,0 +1,230 @@
+    </section>
+  </div>
+
+  <section>
+    <p id="status" class="status" role="status">
+      Checking login...
+    </p>
+  </section>
+</main>
+
+<script type="module">
+import { createClient } from
+  "https://esm.sh/@supabase/supabase-js@2";
+
+const supabase = createClient(
+  "https://adifwwlmdditbdxjwbjn.supabase.co",
+  "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH"
+);
+
+const $ = id => document.getElementById(id);
+
+function status(text, error = false) {
+  $("status").textContent = text;
+  $("status").className =
+    "status " + (error ? "error" : "success");
+}
+
+function showLoggedOut() {
+  $("manager").classList.add("hidden");
+  $("loginSection").classList.remove("hidden");
+  $("staffEmail").textContent = "";
+}
+
+async function verifyStaff(user) {
+  if (!user) return false;
+
+  const { data, error } = await supabase
+    .from("staff_users")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) throw error;
+  return !!data;
+}
+
+async function showLoggedIn(user) {
+  $("loginSection").classList.add("hidden");
+  $("manager").classList.remove("hidden");
+  $("staffEmail").textContent =
+    "Signed in as: " + (user.email || "");
+
+  await loadBusinesses();
+  status("Authorised staff access confirmed.");
+}
+
+async function checkAccess() {
+  showLoggedOut();
+
+  try {
+    const { data, error } =
+      await supabase.auth.getUser();
+
+    if (error || !data.user) {
+      status("Please sign in.");
+      return;
+    }
+
+    if (!(await verifyStaff(data.user))) {
+      status("This account is not authorised staff.", true);
+      return;
+    }
+
+    await showLoggedIn(data.user);
+  } catch (error) {
+    showLoggedOut();
+    status(error.message, true);
+  }
+}
+
+$("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  $("loginBtn").disabled = true;
+
+  try {
+    const { data, error } =
+      await supabase.auth.signInWithPassword({
+        email: $("email").value.trim(),
+        password: $("password").value
+      });
+
+    if (error) throw error;
+
+    $("password").value = "";
+
+    if (!(await verifyStaff(data.user))) {
+      showLoggedOut();
+      status("This account is not authorised staff.", true);
+      return;
+    }
+
+    await showLoggedIn(data.user);
+  } catch (error) {
+    showLoggedOut();
+    status(error.message, true);
+  } finally {
+    $("loginBtn").disabled = false;
+  }
+});
+
+$("logoutBtn").addEventListener("click", async () => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    status(error.message, true);
+    return;
+  }
+
+  showLoggedOut();
+  status("Signed out successfully.");
+});
+
+async function loadBusinesses() {
+  const { data, error } = await supabase
+    .from("businesses")
+    .select("id,name")
+    .order("name");
+
+  if (error) throw error;
+
+  const select = $("businessSelect");
+  select.replaceChildren();
+
+  const blank = new Option("Select a business", "");
+  select.add(blank);
+
+  (data || []).forEach(business => {
+    select.add(new Option(business.name, business.id));
+  });
+}
+
+$("businessForm").addEventListener("submit",
+  async event => {
+    event.preventDefault();
+    $("businessBtn").disabled = true;
+
+    try {
+      const { data: userData, error: authError } =
+        await supabase.auth.getUser();
+
+      if (authError || !userData.user ||
+          !(await verifyStaff(userData.user))) {
+        throw new Error("Staff access required.");
+      }
+
+      const business = {
+        name: $("businessName").value.trim(),
+        category: $("category").value,
+        address: $("address").value.trim(),
+        phone: $("phone").value.trim(),
+        latitude: Number($("latitude").value),
+        longitude: Number($("longitude").value)
+      };
+
+      const { error } = await supabase
+        .from("businesses")
+        .insert(business);
+
+      if (error) throw error;
+
+      $("businessForm").reset();
+      await loadBusinesses();
+      status("Business saved successfully.");
+    } catch (error) {
+      status(error.message, true);
+    } finally {
+      $("businessBtn").disabled = false;
+    }
+  }
+);
+
+$("promotionForm").addEventListener("submit",
+  async event => {
+    event.preventDefault();
+    $("promotionBtn").disabled = true;
+
+    try {
+      const { data: userData, error: authError } =
+        await supabase.auth.getUser();
+
+      if (authError || !userData.user ||
+          !(await verifyStaff(userData.user))) {
+        throw new Error("Staff access required.");
+      }
+
+      if ($("endDate").value < $("startDate").value) {
+        throw new Error(
+          "End date must not be before start date."
+        );
+      }
+
+      const promotion = {
+        business_id: $("businessSelect").value,
+        offer_title: $("offerTitle").value.trim(),
+        offer_description:
+          $("offerDescription").value.trim(),
+        start_date: $("startDate").value,
+        end_date: $("endDate").value
+      };
+
+      const { error } = await supabase
+        .from("promotions")
+        .insert(promotion);
+
+      if (error) throw error;
+
+      $("promotionForm").reset();
+      status("Promotion saved successfully.");
+    } catch (error) {
+      status(error.message, true);
+    } finally {
+      $("promotionBtn").disabled = false;
+    }
+  }
+);
+
+checkAccess();
+</script>
+</body>
+</html>
