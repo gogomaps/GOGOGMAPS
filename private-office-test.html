@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <title>GoGo Maps | Private Office</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #edf2f7;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .login-box {
+      background: white;
+      width: 100%;
+      max-width: 420px;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px #00000015;
+    }
+
+    h1 {
+      color: #1769aa;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 24px;
+      background: #1769aa;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    #message {
+      margin-top: 18px;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .error { color: #b42318; }
+    .success { color: #167347; }
+
+    #office { display: none; }
+  </style>
+</head>
+
+<body>
+
+  <main class="login-box">
+
+    <h1>GoGo Maps</h1>
+    <h2>Private Office</h2>
+
+    <form id="loginForm">
+      <label for="email">Email Address</label>
+      <input
+        id="email"
+        type="email"
+        autocomplete="username"
+        required
+      >
+
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button id="loginButton" type="submit">
+        Sign In
+      </button>
+    </form>
+
+    <section id="office">
+      <p class="success">
+        Login successful.
+      </p>
+
+      <p>Welcome to your GoGo Maps Private Office.</p>
+
+      <p id="signedInEmail"></p>
+
+      <button id="logoutButton" type="button">
+        Sign Out
+      </button>
+    </section>
+
+    <p id="message" role="status"></p>
+
+  </main>
+
+  <script type="module">
+    import { createClient } from
+      "https://esm.sh/@supabase/supabase-js@2";
+
+    const SUPABASE_URL =
+      "https://adifwwlmdditbdxjwbjn.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH";
+
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const loginForm =
+      document.getElementById("loginForm");
+
+    const office =
+      document.getElementById("office");
+
+    const message =
+      document.getElementById("message");
+
+    const loginButton =
+      document.getElementById("loginButton");
+
+    const signedInEmail =
+      document.getElementById("signedInEmail");
+
+    function showMessage(text, isError = false) {
+      message.textContent = text;
+      message.className = isError ? "error" : "success";
+    }
+
+    function showLoggedOut() {
+      office.style.display = "none";
+      loginForm.style.display = "block";
+      signedInEmail.textContent = "";
+    }
+
+    function showLoggedIn(user) {
+      loginForm.style.display = "none";
+      office.style.display = "block";
+
+      signedInEmail.textContent =
+        "Signed in as: " + (user.email || "");
+
+      showMessage("");
+    }
+
+    loginForm.addEventListener("submit",
+      async function(event) {
+        event.preventDefault();
+
+        loginButton.disabled = true;
+        showMessage("Signing in...");
+
+        try {
+          const email =
+            document.getElementById("email").value;
+
+          const password =
+            document.getElementById("password").value;
+
+          const { data, error } =
+            await supabase.auth.signInWithPassword({
+              email,
+              password
+            });
+
+          if (error) throw error;
+
+          document.getElementById("password").value = "";
+
+          showLoggedIn(data.user);
+
+        } catch (error) {
+          showMessage(error.message, true);
+        } finally {
+          loginButton.disabled = false;
+        }
+      }
+    );
+
+    document.getElementById("logoutButton")
+      .addEventListener("click", async function() {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+          showMessage(error.message, true);
+          return;
+        }
+
+        showLoggedOut();
+        showMessage("Signed out successfully.");
+      });
+
+    async function checkExistingLogin() {
+      const { data, error } =
+        await supabase.auth.getUser();
+
+      if (!error && data.user) {
+        showLoggedIn(data.user);
+      } else {
+        showLoggedOut();
+      }
+    }
+
+    checkExistingLogin();
+  </script>
+
+</body>
+</html>
