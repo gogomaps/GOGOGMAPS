@@ -32,7 +32,7 @@ h1 { margin: 0; font-size: 23px; }
 header small { color: #c6dce9; }
 
 button, .btn {
-  background: #0876b9;
+  background: #0876b9;f
   color: white;
   border: none;
   padding: 11px 14px;
@@ -587,6 +587,16 @@ $("nearBtn").onclick = () => {
         position.coords.latitude,
         position.coords.longitude
       ], 15);
+      L.circleMarker(
+  [position.coords.latitude, position.coords.longitude],
+  {
+    radius: 9,
+    color: "#ffffff",
+    weight: 3,
+    fillColor: "#1685ff",
+    fillOpacity: 1
+  }
+).addTo(map).bindPopup("You are here");
     },
     () => alert("Location permission unavailable.")
   );
