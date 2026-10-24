@@ -247,7 +247,8 @@
           type="date"
           required
         >
-
+       <label for="promotionPhoto">Promotional Photo</label>
+<input type="file" id="promotionPhoto" accept="image/*"> 
         <button id="promotionBtn" type="submit">
           Save Promotion
         </button>
@@ -499,14 +500,32 @@ if (photoFile) {
             "End date must not be before start date."
           );
         }
+let promotionPhotoUrl = null;
+const promotionPhotoFile = $("promotionPhoto").files[0];
 
+if (promotionPhotoFile) {
+  const fileName = crypto.randomUUID() + "-" + promotionPhotoFile.name;
+
+  const { error: uploadError } = await supabase.storage
+    .from("promotion-photos")
+    .upload(fileName, promotionPhotoFile);
+
+  if (uploadError) throw uploadError;
+
+  const { data: photoData } = supabase.storage
+    .from("promotion-photos")
+    .getPublicUrl(fileName);
+
+  promotionPhotoUrl = photoData.publicUrl;
+}
         const promotion = {
           business_id: $("businessSelect").value,
           offer_title: $("offerTitle").value.trim(),
           offer_description:
             $("offerDescription").value.trim(),
           start_date: $("startDate").value,
-          end_date: $("endDate").value
+          end_date: $("endDate").value,
+          promotional_photo_url: promotionPhotoUrl
         };
 
         const { error } = await supabase
