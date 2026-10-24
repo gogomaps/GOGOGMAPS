@@ -417,36 +417,79 @@ if (place.photo_url) {
     media.append(logoCell, videoCell, qrCell);
     detail.appendChild(media);
 
-    const photoUrl = safeUrl(
-      place.promotion.promotional_photo_url
-    );
+    const photoUrls = (
+  Array.isArray(place.promotion.promotional_photo_urls)
+    ? place.promotion.promotional_photo_urls
+    : []
+).map(safeUrl).filter(Boolean);
 
-    if (photoUrl) {
-      const photo = document.createElement("img");
-      photo.src = photoUrl;
-      photo.alt = "Promotion photo";
-      photo.style.cssText =
-        "width:100%;max-height:240px;object-fit:contain;margin-top:12px";
-      detail.appendChild(photo);
-    }
-  } else {
-    addText(detail, "p", "Standard business listing");
+if (photoUrls.length === 0) {
+  const oldPhoto = safeUrl(place.promotion.promotional_photo_url);
+  if (oldPhoto) photoUrls.push(oldPhoto);
+}
+
+if (photoUrls.length > 0) {
+  const gallery = document.createElement("div");
+  gallery.style.cssText = "margin-top:12px;width:100%;";
+
+  const mainPhoto = document.createElement("img");
+  let currentPhoto = 0;
+
+  mainPhoto.src = photoUrls[0];
+  mainPhoto.alt = "Promotional photograph";
+  mainPhoto.style.cssText =
+    "width:100%;height:240px;object-fit:contain;border-radius:10px;background:#f3f3f3;";
+
+  const thumbnails = document.createElement("div");
+  thumbnails.style.cssText =
+    "display:flex;gap:6px;overflow-x:auto;margin-top:8px;";
+
+  function showPhoto(index) {
+    currentPhoto = index;
+    mainPhoto.src = photoUrls[index];
+
+    Array.from(thumbnails.children).forEach((thumb, i) => {
+      thumb.style.border = i === index
+        ? "3px solid #1769aa"
+        : "2px solid transparent";
+    });
   }
 
-  if (
-    Number.isFinite(place.lat) &&
-    Number.isFinite(place.lon)
-  ) {
-    const directions = document.createElement("a");
-    directions.className = "btn";
-    directions.textContent = "Directions";
-    directions.target = "_blank";
-    directions.rel = "noopener noreferrer";
-    directions.href =
-      "https://www.google.com/maps/dir/?api=1&destination=" +
-      encodeURIComponent(place.lat + "," + place.lon);
+  photoUrls.slice(0, 5).forEach((url, index) => {
+    const thumb = document.createElement("img");
+    thumb.src = url;
+    thumb.alt = "Photo " + (index + 1);
+    thumb.style.cssText =
+      "width:58px;height:58px;object-fit:cover;border-radius:6px;cursor:pointer;flex-shrink:0;";
 
-    detail.appendChild(directions);
+    thumb.addEventListener("click", () => showPhoto(index));
+    thumbnails.appendChild(thumb);
+  });
+
+  let touchStartX = 0;
+
+  mainPhoto.addEventListener("touchstart", event => {
+    touchStartX = event.changedTouches[0].screenX;
+  }, { passive: true });
+
+  mainPhoto.addEventListener("touchend", event => {
+    const difference =
+      event.changedTouches[0].screenX - touchStartX;
+
+    if (Math.abs(difference) > 40) {
+      const next = difference < 0
+        ? (currentPhoto + 1) % thumbnails.children.length
+        : (currentPhoto - 1 + thumbnails.children.length)
+          % thumbnails.children.length;
+
+      showPhoto(next);
+    }
+  });
+
+  gallery.append(mainPhoto, thumbnails);
+  detail.appendChild(gallery);
+  showPhoto(0);
+}
   }
 
   $("detailModal").classList.add("open");
