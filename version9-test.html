@@ -355,7 +355,13 @@ function openDetail(id) {
     (place.category || "Business") + " · " +
     (place.address || "Batumi")
   );
-
+if (place.photo_url) {
+  const photo = document.createElement("img");
+  photo.src = place.photo_url;
+  photo.alt = "Business photo";
+  photo.style.cssText = "width:100%;max-height:250px;object-fit:cover;border-radius:10px;margin:10px 0;";
+  detail.appendChild(photo);
+}
   if (place.phone) {
     addText(detail, "p", "☎ " + place.phone);
   }
