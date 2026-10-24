@@ -248,7 +248,7 @@
           required
         >
        <label for="promotionPhoto">Promotional Photo</label>
-<input type="file" id="promotionPhoto" accept="image/*"> 
+         <input type="file" id="promotionPhoto" accept="image/*" multiple>
         <button id="promotionBtn" type="submit">
           Save Promotion
         </button>
@@ -501,14 +501,19 @@ if (photoFile) {
           );
         }
 let promotionPhotoUrl = null;
-const promotionPhotoFile = $("promotionPhoto").files[0];
+const promotionPhotoUrls = [];
+const promotionPhotoFiles = Array.from($("promotionPhoto").files);
 
-if (promotionPhotoFile) {
-  const fileName = crypto.randomUUID() + "-" + promotionPhotoFile.name;
+if (promotionPhotoFiles.length > 5) {
+  throw new Error("You can upload a maximum of 5 promotional photos.");
+}
+
+for (const photoFile of promotionPhotoFiles) {
+  const fileName = crypto.randomUUID() + "-" + photoFile.name;
 
   const { error: uploadError } = await supabase.storage
     .from("promotion-photos")
-    .upload(fileName, promotionPhotoFile);
+    .upload(fileName, photoFile);
 
   if (uploadError) throw uploadError;
 
@@ -516,8 +521,10 @@ if (promotionPhotoFile) {
     .from("promotion-photos")
     .getPublicUrl(fileName);
 
-  promotionPhotoUrl = photoData.publicUrl;
+  promotionPhotoUrls.push(photoData.publicUrl);
 }
+
+promotionPhotoUrl = promotionPhotoUrls[0] || null;
         const promotion = {
           business_id: $("businessSelect").value,
           offer_title: $("offerTitle").value.trim(),
@@ -525,7 +532,8 @@ if (promotionPhotoFile) {
             $("offerDescription").value.trim(),
           start_date: $("startDate").value,
           end_date: $("endDate").value,
-          promotional_photo_url: promotionPhotoUrl
+          promotional_photo_url: promotionPhotoUrl,
+          promotional_photo_urls: promotionPhotoUrls
         };
 
         const { error } = await supabase
