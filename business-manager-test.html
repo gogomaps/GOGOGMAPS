@@ -249,6 +249,7 @@
         >
        <label for="promotionPhoto">Promotional Photo</label>
          <input type="file" id="promotionPhoto" accept="image/*" multiple>
+        <div id="promotionPhotoPreviews" style="display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;"></div>
         <button id="promotionBtn" type="submit">
           Save Promotion
         </button>
@@ -276,7 +277,57 @@
   );
 
   const $ = id => document.getElementById(id);
+let selectedPromotionPhotos = [];
 
+$("promotionPhoto").addEventListener("change", event => {
+  const newPhotos = Array.from(event.target.files);
+
+  if (selectedPromotionPhotos.length + newPhotos.length > 5) {
+    alert("You can select a maximum of 5 photographs.");
+    event.target.value = "";
+    return;
+  }
+
+  selectedPromotionPhotos.push(...newPhotos);
+  renderPromotionPhotoPreviews();
+  event.target.value = "";
+  });
+  function renderPromotionPhotoPreviews() {
+  const container = $("promotionPhotoPreviews");
+  container.replaceChildren();
+
+  selectedPromotionPhotos.forEach((photo, index) => {
+    const box = document.createElement("div");
+    box.style.cssText =
+      "width:120px; padding:8px; border:1px solid #ccc; border-radius:8px; text-align:center;";
+
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(photo);
+    img.style.cssText =
+      "width:100%; height:90px; object-fit:cover; border-radius:5px;";
+    img.onload = () => URL.revokeObjectURL(img.src);
+
+    const name = document.createElement("div");
+    name.textContent = photo.name;
+    name.style.cssText =
+      "font-size:11px; overflow-wrap:anywhere; margin-top:5px;";
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.textContent = "Remove ×";
+    removeBtn.style.cssText =
+      "background:#c62828; padding:6px; font-size:12px; margin-top:6px;";
+
+    removeBtn.addEventListener("click", () => {
+      selectedPromotionPhotos.splice(index, 1);
+      renderPromotionPhotoPreviews();
+    });
+
+    box.append(img, name, removeBtn);
+    container.appendChild(box);
+  });
+}
+    
   function status(text, error = false) {
     $("status").textContent = text;
     $("status").className =
@@ -502,8 +553,7 @@ if (photoFile) {
         }
 let promotionPhotoUrl = null;
 const promotionPhotoUrls = [];
-const promotionPhotoFiles = Array.from($("promotionPhoto").files);
-
+const promotionPhotoFiles = selectedPromotionPhotos;
 if (promotionPhotoFiles.length > 5) {
   throw new Error("You can upload a maximum of 5 promotional photos.");
 }
@@ -543,7 +593,9 @@ promotionPhotoUrl = promotionPhotoUrls[0] || null;
         if (error) throw error;
 
         $("promotionForm").reset();
-        status("Promotion saved successfully.");
+selectedPromotionPhotos = [];
+renderPromotionPhotoPreviews();
+status("Promotion saved successfully.");
 
       } catch (error) {
         status(error.message, true);
