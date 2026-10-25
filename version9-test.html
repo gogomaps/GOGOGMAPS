@@ -234,7 +234,7 @@ footer {
   </button>
 
   <button id="specialBtn">
-    🔴 Specials only
+    🔴 Special Offers
   </button>
 
   <button id="nearBtn" class="secondary">
@@ -521,7 +521,7 @@ function render() {
     found.length + " listings · " +
     found.filter(p => p.promotion).length +
     " active specials";
-
+found.sort((a, b) => Number(Boolean(b.promotion)) - Number(Boolean(a.promotion)));
   found.forEach(place => {
     const item = document.createElement("div");
     item.className = "item";
