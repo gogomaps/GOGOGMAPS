@@ -226,7 +226,9 @@ footer {
 <div class="toolbar">
   <input id="search"
     placeholder="Search businesses and promotions in English">
-
+<button id="searchBtn" type="button" aria-label="Search businesses">
+  🔍
+</button>
   <button id="allBtn" class="secondary">
     All businesses
   </button>
@@ -617,7 +619,7 @@ async function loadBusinesses() {
 }
 
 $("search").oninput = render;
-
+$("searchBtn").onclick = render;
 $("allBtn").onclick = () => {
   specialsOnly = false;
   render();
