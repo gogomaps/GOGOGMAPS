@@ -524,8 +524,11 @@ function render() {
     const item = document.createElement("div");
     item.className = "item";
 
-    const heading = addText(item, "h3", place.name);
 
+
+    
+    const heading = addText(item, "h3", place.name);
+heading.style.color = place.promotion ? "#d62828" : "#1769aa";
     if (place.promotion) {
       const badge = document.createElement("span");
       badge.className = "pill";
