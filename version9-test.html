@@ -32,7 +32,7 @@ h1 { margin: 0; font-size: 23px; }
 header small { color: #c6dce9; }
 
 button, .btn {
-  background: #0876b9;f
+  background: #0876b9;
   color: white;
   border: none;
   padding: 11px 14px;
@@ -80,7 +80,30 @@ button:disabled {
   border-radius: 8px;
   font-size: 15px;
 }
+.search-container {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 220px;
+}
 
+.search-container input {
+  width: 100%;
+  padding-right: 45px;
+  box-sizing: border-box;
+}
+
+.search-container button {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 5px;
+}
 .layout {
   display: grid;
   grid-template-columns: 330px 1fr;
@@ -224,11 +247,19 @@ footer {
 </div>
 
 <div class="toolbar">
+  <div class="search-container">
   <input id="search"
     placeholder="Search businesses and promotions in English">
-<button id="searchBtn" type="button" aria-label="Search businesses">
-  🔍
-</button>
+
+  <button id="searchBtn" type="button" aria-label="Search businesses">
+    🔍
+  </button>
+</div>
+  
+  
+  
+  
+  
   <button id="allBtn" class="secondary">
     All businesses
   </button>
