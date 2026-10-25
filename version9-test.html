@@ -245,16 +245,20 @@ footer {
 <header>
   <div>
     <h1>📍 GoGo Maps — Batumi</h1>
-    <small>Discover local businesses and exclusive specials</small>
+    <small id="headerSubtitle">Discover local businesses and exclusive specials</small>
   </div>
-  <button class="secondary" disabled>
-    🔒 Private office — coming soon
-  </button>
+   <select id="languageSelect" aria-label="Choose language">
+    <option value="en">🇬🇧 English</option>
+    <option value="ka">🇬🇪 ქართული</option>
+  </select>
+  <button id="privateOfficeBtn" class="secondary" disabled>
+  🔒 Private office — coming soon
+</button>
 </header>
 
 <main class="wrap">
 
-<div class="notice">
+<div class="notice" id="versionNotice">
   VERSION 9 TEST — Connected to the GoGo Maps online database.
   Staff management is not yet enabled.
 </div>
@@ -262,7 +266,8 @@ footer {
 <div class="toolbar">
   <div class="search-container">
   <input id="search"
-    placeholder="Search businesses and promotions in English">
+  data-translate-placeholder="searchPlaceholder"
+  placeholder="Search businesses and promotions in English">
 
   <button id="searchBtn" type="button" aria-label="Search businesses">
     🔍
@@ -273,22 +278,20 @@ footer {
   
   
   
-  <button id="allBtn" class="secondary">
-    All businesses
-  </button>
-
-  <button id="specialBtn">
-    🔴 Special Offers
-  </button>
-
-  <button id="nearBtn" class="secondary">
-    Find me
-  </button>
+ <button id="allBtn" class="secondary" data-translate="allBusinesses">
+  All businesses
+</button>
+  <button id="specialBtn" data-translate="specialOffers">
+  🔴 Special Offers
+</button>
+ <button id="nearBtn" class="secondary" data-translate="findMe">
+  Find me
+</button>
 </div>
 
 <div class="layout">
   <div class="panel">
-    <p id="status">Connecting to database...</p>
+<p id="status" data-translate="connecting">Connecting to database...</p>
     <b id="count"></b>
     <div id="results"></div>
   </div>
@@ -298,7 +301,7 @@ footer {
 
 </main>
 
-<footer>
+<footer id="footerText">
   GoGo Maps Version 9 Test · Map © OpenStreetMap contributors
 </footer>
 
@@ -323,7 +326,54 @@ const $ = id => document.getElementById(id);
 
 let places = [];
 let specialsOnly = false;
+  const translations = {
+  en: {
+    headerSubtitle: "Discover local businesses and exclusive specials",
+    privateOffice: "🔒 Private office — coming soon",
+    versionNotice: "VERSION 9 TEST — Connected to the GoGo Maps online database. Staff management is not yet enabled.",
+    searchPlaceholder: "Search businesses and promotions in English",
+    allBusinesses: "All businesses",
+    specialOffers: "🔴 Special Offers",
+    findMe: "Find me",
+    connecting: "Connecting to database...",
+    footer: "GoGo Maps Version 9 Test · Map © OpenStreetMap contributors"
+  },
 
+  ka: {
+ headerSubtitle: "აღმოაჩინეთ ადგილობრივი ბიზნესები და სპეციალური შეთავაზებები",
+    privateOffice: "🔒 პირადი ოფისი — მალე",
+    versionNotice: "ვერსია 9 ტესტი — დაკავშირებულია GoGo Maps-ის ონლაინ მონაცემთა ბაზასთან. თანამშრომლების მართვა ჯერ არ არის ჩართული.",
+    searchPlaceholder: "მოძებნეთ ბიზნესები და შეთავაზებები",
+    allBusinesses: "ყველა ბიზნესი",
+    specialOffers: "🔴 სპეციალური შეთავაზებები",
+    findMe: "ჩემი მდებარეობა",
+    connecting: "მონაცემთა ბაზასთან დაკავშირება...",
+    footer: "GoGo Maps ვერსია 9 ტესტი · რუკა © OpenStreetMap-ის მონაწილეები"
+  }
+};
+    let currentLanguage = localStorage.getItem("gogoLanguage") || "en";
+$("languageSelect").value = currentLanguage;
+$("languageSelect").addEventListener("change", function () {
+  currentLanguage = this.value;
+  localStorage.setItem("gogoLanguage", currentLanguage);
+  applyTranslations();
+});
+  function applyTranslations() {
+  const t = translations[currentLanguage] || translations.en;
+
+  $("headerSubtitle").textContent = t.headerSubtitle;
+  $("privateOfficeBtn").textContent = t.privateOffice;
+  $("versionNotice").textContent = t.versionNotice;
+
+  $("search").placeholder = t.searchPlaceholder;
+
+  $("allBtn").textContent = t.allBusinesses;
+  $("specialBtn").textContent = t.specialOffers;
+  $("nearBtn").textContent = t.findMe;
+
+  $("footerText").textContent = t.footer;
+}
+  applyTranslations();
 const map = L.map("map").setView(
   [41.6168, 41.6367], 13
 );
