@@ -263,10 +263,14 @@ footer {
     <h1>📍 GoGo Maps — Batumi</h1>
     <small id="headerSubtitle">Discover local businesses and exclusive specials</small>
   </div>
-   <select id="languageSelect" aria-label="Choose language">
-    <option value="en">🇬🇧 English</option>
-    <option value="ka">🇬🇪 ქართული</option>
-  </select>
+  <label id="languageLabel" for="languageSelect">
+  🌐 Select Language:
+</label>
+
+<select id="languageSelect" aria-label="Choose language">
+  <option value="en">🇬🇧 English</option>
+  <option value="ka">🇬🇪 ქართული</option>
+</select>
   <button id="privateOfficeBtn" class="secondary" disabled>
   🔒 Private office — coming soon
 </button>
@@ -343,9 +347,10 @@ const $ = id => document.getElementById(id);
 let places = [];
 let specialsOnly = false;
   const translations = {
-  en: {
-    headerSubtitle: "Discover local businesses and exclusive specials",
-    privateOffice: "🔒 Private office — coming soon",
+    en: {
+      headerSubtitle: "Discover local businesses and exclusive specials",
+      languageLabel: "🌐 Select Language:",
+       privateOffice: "🔒 Private office — coming soon",
     versionNotice: "VERSION 9 TEST — Connected to the GoGo Maps online database. Staff management is not yet enabled.",
     searchPlaceholder: "Search businesses and promotions in English",
     allBusinesses: "All businesses",
@@ -357,6 +362,7 @@ let specialsOnly = false;
 
   ka: {
  headerSubtitle: "აღმოაჩინეთ ადგილობრივი ბიზნესები და სპეციალური შეთავაზებები",
+    languageLabel: "🌐 აირჩიეთ ენა:",
     privateOffice: "🔒 პირადი ოფისი — მალე",
     versionNotice: "ვერსია 9 ტესტი — დაკავშირებულია GoGo Maps-ის ონლაინ მონაცემთა ბაზასთან. თანამშრომლების მართვა ჯერ არ არის ჩართული.",
     searchPlaceholder: "მოძებნეთ ბიზნესები და შეთავაზებები",
@@ -378,6 +384,7 @@ $("languageSelect").addEventListener("change", function () {
   const t = translations[currentLanguage] || translations.en;
 
   $("headerSubtitle").textContent = t.headerSubtitle;
+    $("languageLabel").textContent = t.languageLabel;
   $("privateOfficeBtn").textContent = t.privateOffice;
   $("versionNotice").textContent = t.versionNotice;
 
