@@ -1009,8 +1009,55 @@ async function loadCommissionPaymentHistory() {
     return;
   }
 
-  history.textContent =
-    data.length + " commission payment(s) found.";
+  // DISPLAY COMMISSION PAYMENT HISTORY TABLE
+history.replaceChildren();
+
+const table = document.createElement("table");
+table.style.width = "100%";
+table.style.borderCollapse = "collapse";
+
+const headings = [
+  "Payment Date",
+  "Rep Number",
+  "Representative Name",
+  "Amount",
+  "Payment Method",
+  "Reference",
+  "Notes"
+];
+
+const headerRow = table.insertRow();
+
+headings.forEach(heading => {
+  const cell = document.createElement("th");
+  cell.textContent = heading;
+  cell.style.padding = "10px";
+  cell.style.border = "1px solid #ddd";
+  headerRow.appendChild(cell);
+});
+
+data.forEach(payment => {
+  const row = table.insertRow();
+
+  const values = [
+    payment.payment_date,
+    payment.sales_representatives?.rep_number || "",
+    payment.sales_representatives?.full_name || "",
+    Number(payment.payment_amount).toFixed(2) + " GEL",
+    payment.payment_method || "",
+    payment.payment_reference || "",
+    payment.notes || ""
+  ];
+
+  values.forEach(value => {
+    const cell = row.insertCell();
+    cell.textContent = value;
+    cell.style.padding = "10px";
+    cell.style.border = "1px solid #ddd";
+  });
+});
+
+history.appendChild(table);
 }
   // LOAD REPRESENTATIVES FOR COMMISSION PAYMENTS
 async function loadCommissionPaymentRepresentatives() {
