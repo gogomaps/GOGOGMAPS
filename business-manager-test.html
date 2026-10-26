@@ -710,7 +710,7 @@ list.textContent = "Loading sales representatives...";
 list.style.color = "#333";
   const { data, error } = await supabase
     .from("sales_representatives")
-    .select("rep_number, full_name, phone, active")
+    .select("id, rep_number, full_name, phone, active")
     .order("rep_number", { ascending: true });
 
   if (error) {
@@ -739,6 +739,9 @@ const editButton = document.createElement("button");
 editButton.type = "button";
 editButton.textContent = "✏️ Edit Representative";
 editButton.style.marginLeft = "15px";
+    editButton.addEventListener("click", function() {
+  $("editingRepId").value = rep.id;
+});
 
 row.appendChild(editButton);
     list.appendChild(row);
