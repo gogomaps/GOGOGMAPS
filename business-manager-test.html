@@ -734,7 +734,12 @@ list.style.color = "#333";
       rep.full_name + " — " +
       (rep.phone || "No telephone") + " — " +
       (rep.active ? "Active" : "Inactive");
+const editButton = document.createElement("button");
+editButton.type = "button";
+editButton.textContent = "✏️ Edit Representative";
+editButton.style.marginLeft = "15px";
 
+row.appendChild(editButton);
     list.appendChild(row);
   });
 
