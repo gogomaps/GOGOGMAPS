@@ -764,8 +764,10 @@ list.style.color = "#333";
       (rep.active ? "Active" : "Inactive");
 const editButton = document.createElement("button");
 editButton.type = "button";
-editButton.textContent = "✏️ Edit Representative";
-editButton.style.marginLeft = "15px";
+editButton.textContent = "✏️ Edit";
+editButton.style.marginLeft = "10px";
+editButton.style.padding = "4px 10px";
+editButton.style.fontSize = "12px";
 editButton.addEventListener("click", async function() {
   const { data, error } = await supabase
     .from("sales_representatives")
