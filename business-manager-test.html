@@ -321,9 +321,26 @@
     <label for="paymentNotes">Notes</label>
     <textarea id="paymentNotes" rows="3"></textarea>
 
-    <button id="recordCommissionPaymentBtn" type="submit">
-      Record Commission Payment
-    </button>
+    <!-- COMMISSION PAYMENT REJECTION MESSAGE -->
+<div
+  id="commissionPaymentError"
+  role="alert"
+  style="
+    display: none;
+    background-color: #d60000;
+    color: white;
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+  "
+></div>
+
+<button id="recordCommissionPaymentBtn" type="submit">
+  Record Commission Payment
+</button>
 
   </form>
 
