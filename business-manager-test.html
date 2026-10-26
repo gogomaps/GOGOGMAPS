@@ -958,9 +958,40 @@ async function loadSalesCommissionReport() {
 
   report.appendChild(table);
 }
+  // LOAD REPRESENTATIVES FOR COMMISSION PAYMENTS
+async function loadCommissionPaymentRepresentatives() {
+  const dropdown = $("paymentRep");
+
+  dropdown.replaceChildren();
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "Select Representative";
+  dropdown.appendChild(placeholder);
+
+  const { data, error } = await supabase
+    .from("sales_representatives")
+    .select("id, rep_number, full_name")
+    .order("rep_number", { ascending: true });
+
+  if (error) {
+    alert("Could not load representatives: " + error.message);
+    return;
+  }
+
+  (data || []).forEach(rep => {
+    const option = document.createElement("option");
+
+    option.value = rep.id;
+    option.textContent = rep.rep_number + " — " + rep.full_name;
+
+    dropdown.appendChild(option);
+  });
+}
   checkAccess();
   loadSalesRepresentatives();
   loadSalesCommissionReport();
+   loadCommissionPaymentRepresentatives();
 </script>
 
 </body>
