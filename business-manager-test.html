@@ -933,12 +933,13 @@ async function loadSalesCommissionReport() {
   table.style.borderCollapse = "collapse";
 
   const headings = [
-    "Representative",
-    "Advertisements",
-    "Commission Earned",
-    "Commission Paid",
-    "Outstanding"
-  ];
+  "Rep Number",
+  "Representative Name",
+  "Advertisements",
+  "Commission Earned",
+  "Commission Paid",
+  "Outstanding"
+];
 
   const headerRow = table.insertRow();
 
@@ -953,18 +954,18 @@ async function loadSalesCommissionReport() {
   data.forEach(rep => {
     const row = table.insertRow();
 
-    const values = [
-      rep.rep_number,
-      rep.total_advertisements,
-      rep.total_commission_earned,
-      rep.total_commission_paid,
-      rep.total_commission_outstanding_to_date
-    ];
+   const values = [
+  rep.rep_number,
+  rep.representative_name,
+  rep.total_advertisements,
+  rep.total_commission_earned,
+  rep.total_commission_paid,
+  rep.total_commission_outstanding_to_date
+];
 
     values.forEach((value, index) => {
       const cell = row.insertCell();
-      cell.textContent =
-        index >= 2
+      cell.textContent = index >= 3
           ? Number(value || 0).toFixed(2) + " GEL"
           : String(value ?? 0);
 
