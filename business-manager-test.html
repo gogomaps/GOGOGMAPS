@@ -682,20 +682,40 @@ $("salesRepForm").addEventListener("submit", async function(event) {
       throw new Error("Staff access required.");
     }
 
-    const { error } = await supabase
-      .from("sales_representatives")
-      .insert({
+   const repDetails = {
   full_name: $("repName").value.trim(),
   personal_id: $("repPersonalId").value.trim() || null,
   residential_address: $("repAddress").value.trim() || null,
   phone: $("repPhone").value.trim() || null,
   email: $("repEmail").value.trim() || null
-});
+};
 
-    if (error) throw error;
+const editingId = $("editingRepId").value;
+
+let saveResult;
+
+if (editingId) {
+  // Update an existing representative
+  saveResult = await supabase
+    .from("sales_representatives")
+    .update(repDetails)
+    .eq("id", editingId)
+    .select("id")
+    .single();
+} else {
+  // Register a new representative
+  saveResult = await supabase
+    .from("sales_representatives")
+    .insert(repDetails)
+    .select("id")
+    .single();
+}
+
+if (saveResult.error) throw saveResult.error;
 
     alert("Sales representative saved successfully!");
     $("salesRepForm").reset();
+    $("editingRepId").value = "";
 await loadSalesRepresentatives();
   } catch (error) {
     alert("Could not save representative: " + error.message);
