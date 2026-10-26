@@ -653,6 +653,45 @@ locationMap.on("click", function(event) {
   selectedLocationMarker = L.marker([lat, lng]).addTo(locationMap);
 });
 
+  
+  // SAVE SALES REPRESENTATIVE
+$("salesRepForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const saveButton = $("saveRepBtn");
+  saveButton.disabled = true;
+
+  try {
+    const { data: userData, error: authError } =
+      await supabase.auth.getUser();
+
+    if (
+      authError ||
+      !userData.user ||
+      !(await verifyStaff(userData.user))
+    ) {
+      throw new Error("Staff access required.");
+    }
+
+    const { error } = await supabase
+      .from("sales_representatives")
+      .insert({
+        full_name: $("repName").value.trim(),
+        phone: $("repPhone").value.trim() || null,
+        email: $("repEmail").value.trim() || null
+      });
+
+    if (error) throw error;
+
+    alert("Sales representative saved successfully!");
+    $("salesRepForm").reset();
+
+  } catch (error) {
+    alert("Could not save representative: " + error.message);
+  } finally {
+    saveButton.disabled = false;
+  }
+});
   checkAccess();
 </script>
 
