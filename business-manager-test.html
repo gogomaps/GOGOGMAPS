@@ -1140,7 +1140,8 @@ history.replaceChildren();
 const table = document.createElement("table");
 table.style.width = "100%";
 table.style.borderCollapse = "collapse";
-
+table.style.fontSize = "10px";
+table.style.lineHeight = "1.2";
 const headings = [
   "Payment Date",
   "Rep Number",
@@ -1156,7 +1157,7 @@ const headerRow = table.insertRow();
 headings.forEach(heading => {
   const cell = document.createElement("th");
   cell.textContent = heading;
-  cell.style.padding = "10px";
+  cell.style.padding = "3px 5px";
   cell.style.border = "1px solid #ddd";
   headerRow.appendChild(cell);
 });
@@ -1177,7 +1178,7 @@ data.forEach(payment => {
   values.forEach(value => {
     const cell = row.insertCell();
     cell.textContent = value;
-    cell.style.padding = "10px";
+    cell.style.padding = "3px 5px";
     cell.style.border = "1px solid #ddd";
   });
 });
