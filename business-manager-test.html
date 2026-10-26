@@ -1044,7 +1044,8 @@ $("paymentRep").addEventListener(
   // COMMISSION PAYMENT FORM VALIDATION
 $("commissionPaymentForm").addEventListener("submit", async function(event) {
   event.preventDefault();
-
+$("commissionPaymentError").style.display = "none";
+$("commissionPaymentError").textContent = "";
   const representativeId = $("paymentRep").value;
   const paymentAmount = Number($("paymentAmount").value);
 
