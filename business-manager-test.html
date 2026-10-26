@@ -976,6 +976,42 @@ async function loadSalesCommissionReport() {
 
   report.appendChild(table);
 }
+  // LOAD COMMISSION PAYMENT HISTORY
+async function loadCommissionPaymentHistory() {
+  const history = $("commissionPaymentHistory");
+
+  history.textContent = "Loading commission payments...";
+
+  const { data, error } = await supabase
+    .from("commission_payments")
+    .select(`
+      id,
+      payment_date,
+      payment_amount,
+      payment_method,
+      payment_reference,
+      notes,
+      sales_representatives (
+        rep_number,
+        full_name
+      )
+    `)
+    .order("payment_date", { ascending: false });
+
+  if (error) {
+    history.textContent =
+      "Could not load commission payments: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    history.textContent = "No commission payments recorded yet.";
+    return;
+  }
+
+  history.textContent =
+    data.length + " commission payment(s) found.";
+}
   // LOAD REPRESENTATIVES FOR COMMISSION PAYMENTS
 async function loadCommissionPaymentRepresentatives() {
   const dropdown = $("paymentRep");
