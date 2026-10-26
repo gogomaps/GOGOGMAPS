@@ -1024,6 +1024,28 @@ $("paymentRep").addEventListener(
   "change",
   loadSelectedRepresentativeBalance
 );
+  // COMMISSION PAYMENT FORM VALIDATION
+$("commissionPaymentForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const representativeId = $("paymentRep").value;
+  const paymentAmount = Number($("paymentAmount").value);
+
+  if (!representativeId) {
+    alert("Please select a sales representative.");
+    return;
+  }
+
+  if (!Number.isFinite(paymentAmount) || paymentAmount <= 0) {
+    alert("Please enter a valid payment amount.");
+    return;
+  }
+
+  alert(
+    "Payment form validation successful. " +
+    "No payment has been recorded yet."
+  );
+});
   checkAccess();
   loadSalesRepresentatives();
   loadSalesCommissionReport();
