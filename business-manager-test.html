@@ -1073,14 +1073,22 @@ $("commissionPaymentForm").addEventListener("submit", async function(event) {
     data.total_commission_outstanding_to_date || 0
   );
 
-  if (Math.round(paymentAmount * 100) >
-      Math.round(outstandingBalance * 100)) {
-    alert(
-      "Payment exceeds the outstanding commission of " +
-      outstandingBalance.toFixed(2) + " GEL."
-    );
-    return;
-  }
+ if (Math.round(paymentAmount * 100) > Math.round(outstandingBalance * 100)) {
+  const errorBox = $("commissionPaymentError");
+
+  errorBox.textContent =
+    "⛔ PAYMENT REJECTED — Payment exceeds the outstanding commission of " +
+    outstandingBalance.toFixed(2) + " GEL.";
+
+  errorBox.style.display = "block";
+
+  errorBox.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  return;
+}
   alert(
     "Payment form validation successful. " +
     "No payment has been recorded yet."
