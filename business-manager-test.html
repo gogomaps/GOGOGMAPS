@@ -1040,7 +1040,30 @@ $("commissionPaymentForm").addEventListener("submit", async function(event) {
     alert("Please enter a valid payment amount.");
     return;
   }
+ // CHECK THE CURRENT OUTSTANDING COMMISSION
+  const { data, error } = await supabase
+    .from("sales_rep_commission_summary")
+    .select("total_commission_outstanding_to_date")
+    .eq("user_id", representativeId)
+    .single();
 
+  if (error) {
+    alert("Could not check outstanding commission: " + error.message);
+    return;
+  }
+
+  const outstandingBalance = Number(
+    data.total_commission_outstanding_to_date || 0
+  );
+
+  if (Math.round(paymentAmount * 100) >
+      Math.round(outstandingBalance * 100)) {
+    alert(
+      "Payment exceeds the outstanding commission of " +
+      outstandingBalance.toFixed(2) + " GEL."
+    );
+    return;
+  }
   alert(
     "Payment form validation successful. " +
     "No payment has been recorded yet."
