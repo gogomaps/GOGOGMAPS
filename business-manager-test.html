@@ -218,6 +218,11 @@
   <form id="salesRepForm">
     <label for="repName">Full Name</label>
     <input id="repName" type="text" required>
+    <label for="repPersonalId">Personal ID Number</label>
+<input id="repPersonalId" type="text">
+
+<label for="repAddress">Residential Address</label>
+<textarea id="repAddress" rows="3"></textarea>
 
     <label for="repPhone">Telephone</label>
     <input id="repPhone" type="tel">
@@ -676,10 +681,12 @@ $("salesRepForm").addEventListener("submit", async function(event) {
     const { error } = await supabase
       .from("sales_representatives")
       .insert({
-        full_name: $("repName").value.trim(),
-        phone: $("repPhone").value.trim() || null,
-        email: $("repEmail").value.trim() || null
-      });
+  full_name: $("repName").value.trim(),
+  personal_id: $("repPersonalId").value.trim() || null,
+  residential_address: $("repAddress").value.trim() || null,
+  phone: $("repPhone").value.trim() || null,
+  email: $("repEmail").value.trim() || null
+});
 
     if (error) throw error;
 
