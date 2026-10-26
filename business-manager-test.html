@@ -739,8 +739,29 @@ const editButton = document.createElement("button");
 editButton.type = "button";
 editButton.textContent = "✏️ Edit Representative";
 editButton.style.marginLeft = "15px";
-    editButton.addEventListener("click", function() {
-  $("editingRepId").value = rep.id;
+editButton.addEventListener("click", async function() {
+  const { data, error } = await supabase
+    .from("sales_representatives")
+    .select("id, full_name, personal_id, residential_address, phone, email, active")
+    .eq("id", rep.id)
+    .single();
+
+  if (error) {
+    alert("Could not load representative: " + error.message);
+    return;
+  }
+
+  $("editingRepId").value = data.id;
+  $("repName").value = data.full_name || "";
+  $("repPersonalId").value = data.personal_id || "";
+  $("repAddress").value = data.residential_address || "";
+  $("repPhone").value = data.phone || "";
+  $("repEmail").value = data.email || "";
+
+  $("salesRepForm").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 });
 
 row.appendChild(editButton);
