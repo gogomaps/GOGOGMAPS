@@ -705,8 +705,8 @@ await loadSalesRepresentatives();
   // DISPLAY REGISTERED SALES REPRESENTATIVES
 async function loadSalesRepresentatives() {
   const list = $("salesRepList");
-  list.textContent = "Loading sales representatives...";
-
+list.textContent = "Loading sales representatives...";
+list.style.color = "#333";
   const { data, error } = await supabase
     .from("sales_representatives")
     .select("rep_number, full_name, phone, active")
@@ -737,6 +737,13 @@ async function loadSalesRepresentatives() {
 
     list.appendChild(row);
   });
+
+    const message = document.createElement("div");
+  message.textContent = "✓ Representatives updated successfully";
+  message.style.color = "green";
+  message.style.fontWeight = "bold";
+  message.style.padding = "10px 0";
+  list.appendChild(message);
 }
   checkAccess();
   loadSalesRepresentatives();
