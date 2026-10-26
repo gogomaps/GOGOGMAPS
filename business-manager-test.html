@@ -239,6 +239,9 @@
   <div id="salesRepList">
     Sales representatives will appear here.
   </div>
+  <button type="button" onclick="loadSalesRepresentatives()">
+  🔄 Refresh Representatives
+</button>
 </section>
     
     <section>
@@ -692,7 +695,7 @@ $("salesRepForm").addEventListener("submit", async function(event) {
 
     alert("Sales representative saved successfully!");
     $("salesRepForm").reset();
-
+await loadSalesRepresentatives();
   } catch (error) {
     alert("Could not save representative: " + error.message);
   } finally {
