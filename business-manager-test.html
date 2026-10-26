@@ -256,7 +256,20 @@
   🔄 Refresh Representatives
 </button>
 </section>
-    
+<!-- SALES REPRESENTATIVE COMMISSION REPORT -->
+<section id="salesCommissionSection">
+
+  <h2>Sales Representative Commission Report</h2>
+
+  <div id="salesCommissionReport">
+    Commission information will appear here.
+  </div>
+
+  <button type="button" onclick="loadSalesCommissionReport()">
+    🔄 Refresh Commission Report
+  </button>
+
+</section>    
     <section>
       <h2>Add a Promotion</h2>
 
@@ -813,8 +826,78 @@ row.appendChild(editButton);
   message.style.padding = "10px 0";
   list.appendChild(message);
 }
+  // SALES REPRESENTATIVE COMMISSION REPORT
+async function loadSalesCommissionReport() {
+  const report = $("salesCommissionReport");
+  report.textContent = "Loading commission information...";
+
+  const { data, error } = await supabase
+    .from("sales_rep_commission_summary")
+    .select("*")
+    .order("rep_number", { ascending: true });
+
+  if (error) {
+    report.textContent = "Could not load commissions: " + error.message;
+    return;
+  }
+
+  report.replaceChildren();
+
+  if (!data || data.length === 0) {
+    report.textContent = "No commission records found.";
+    return;
+  }
+
+  const table = document.createElement("table");
+  table.style.width = "100%";
+  table.style.borderCollapse = "collapse";
+
+  const headings = [
+    "Representative",
+    "Advertisements",
+    "Commission Earned",
+    "Commission Paid",
+    "Outstanding"
+  ];
+
+  const headerRow = table.insertRow();
+
+  headings.forEach(heading => {
+    const cell = document.createElement("th");
+    cell.textContent = heading;
+    cell.style.padding = "10px";
+    cell.style.border = "1px solid #ddd";
+    headerRow.appendChild(cell);
+  });
+
+  data.forEach(rep => {
+    const row = table.insertRow();
+
+    const values = [
+      rep.rep_number,
+      rep.total_advertisements,
+      rep.total_commission_earned,
+      rep.total_commission_paid,
+      rep.total_commission_outstanding_to_date
+    ];
+
+    values.forEach((value, index) => {
+      const cell = row.insertCell();
+      cell.textContent =
+        index >= 2
+          ? Number(value || 0).toFixed(2) + " GEL"
+          : String(value ?? 0);
+
+      cell.style.padding = "10px";
+      cell.style.border = "1px solid #ddd";
+    });
+  });
+
+  report.appendChild(table);
+}
   checkAccess();
   loadSalesRepresentatives();
+  loadSalesCommissionReport();
 </script>
 
 </body>
