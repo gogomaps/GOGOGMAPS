@@ -764,10 +764,11 @@ list.style.color = "#333";
     row.style.borderBottom = "1px solid #ddd";
 
     row.textContent =
-      rep.rep_number + " — " +
-      rep.full_name + " — " +
-      (rep.phone || "No telephone") + " — " +
-      (rep.active ? "Active" : "Inactive");
+  (rep.active ? "🟢 " : "🔴 ") +
+  rep.rep_number + " — " +
+  rep.full_name + " — " +
+  (rep.phone || "No telephone") + " — " +
+  (rep.active ? "Active" : "Inactive");
 const editButton = document.createElement("button");
 editButton.type = "button";
 editButton.textContent = "✏️ Edit";
