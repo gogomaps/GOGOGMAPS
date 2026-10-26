@@ -699,7 +699,44 @@ $("salesRepForm").addEventListener("submit", async function(event) {
     saveButton.disabled = false;
   }
 });
+  // DISPLAY REGISTERED SALES REPRESENTATIVES
+async function loadSalesRepresentatives() {
+  const list = $("salesRepList");
+  list.textContent = "Loading sales representatives...";
+
+  const { data, error } = await supabase
+    .from("sales_representatives")
+    .select("rep_number, full_name, phone, active")
+    .order("rep_number", { ascending: true });
+
+  if (error) {
+    list.textContent = "Could not load representatives: " + error.message;
+    return;
+  }
+
+  list.replaceChildren();
+
+  if (!data || data.length === 0) {
+    list.textContent = "No representatives registered.";
+    return;
+  }
+
+  data.forEach(rep => {
+    const row = document.createElement("div");
+    row.style.padding = "10px";
+    row.style.borderBottom = "1px solid #ddd";
+
+    row.textContent =
+      rep.rep_number + " — " +
+      rep.full_name + " — " +
+      (rep.phone || "No telephone") + " — " +
+      (rep.active ? "Active" : "Inactive");
+
+    list.appendChild(row);
+  });
+}
   checkAccess();
+  loadSalesRepresentatives();
 </script>
 
 </body>
