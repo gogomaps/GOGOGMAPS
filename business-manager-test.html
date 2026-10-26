@@ -1090,10 +1090,39 @@ $("commissionPaymentError").textContent = "";
 
   return;
 }
-  alert(
-    "Payment form validation successful. " +
-    "No payment has been recorded yet."
-  );
+ // RECORD THE COMMISSION PAYMENT IN SUPABASE
+const paymentButton = $("recordCommissionPaymentBtn");
+paymentButton.disabled = true;
+
+try {
+  const { error: paymentError } = await supabase
+    .from("commission_payments")
+    .insert({
+      representative_id: representativeId,
+      payment_amount: paymentAmount,
+      payment_date: $("paymentDate").value,
+      payment_method: $("paymentMethod").value,
+      payment_reference: $("paymentReference").value.trim() || null,
+      notes: $("paymentNotes").value.trim() || null
+    });
+
+  if (paymentError) {
+    const errorBox = $("commissionPaymentError");
+    errorBox.textContent = "⛔ PAYMENT REJECTED — " + paymentError.message;
+    errorBox.style.display = "block";
+    return;
+  }
+
+  alert("Commission payment recorded successfully.");
+
+  $("commissionPaymentForm").reset();
+  $("paymentOutstanding").value = "";
+
+  await loadSalesCommissionReport();
+
+} finally {
+  paymentButton.disabled = false;
+}
 });
   checkAccess();
   loadSalesRepresentatives();
