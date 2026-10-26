@@ -988,6 +988,42 @@ async function loadCommissionPaymentRepresentatives() {
     dropdown.appendChild(option);
   });
 }
+  // DISPLAY OUTSTANDING COMMISSION FOR SELECTED REPRESENTATIVE
+async function loadSelectedRepresentativeBalance() {
+  const representativeId = $("paymentRep").value;
+  const outstandingField = $("paymentOutstanding");
+
+  outstandingField.value = "";
+
+  if (!representativeId) {
+    outstandingField.value = "0.00 GEL";
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("sales_rep_commission_summary")
+    .select("total_commission_outstanding_to_date")
+    .eq("user_id", representativeId)
+    .single();
+
+  if (error) {
+    outstandingField.value = "Unable to load balance";
+    alert("Could not load commission balance: " + error.message);
+    return;
+  }
+
+  const balance = Number(
+    data.total_commission_outstanding_to_date || 0
+  );
+
+  outstandingField.value = balance.toFixed(2) + " GEL";
+}
+
+// UPDATE BALANCE WHEN REPRESENTATIVE IS SELECTED
+$("paymentRep").addEventListener(
+  "change",
+  loadSelectedRepresentativeBalance
+);
   checkAccess();
   loadSalesRepresentatives();
   loadSalesCommissionReport();
