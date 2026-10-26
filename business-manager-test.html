@@ -237,6 +237,11 @@
 
     <label for="repEmail">Email Address</label>
     <input id="repEmail" type="email">
+    <label for="repStatus">Representative Status</label>
+<select id="repStatus">
+  <option value="true">Active</option>
+  <option value="false">Inactive</option>
+</select>
 
     <button id="saveRepBtn" type="submit">
       Save Sales Representative
@@ -694,7 +699,8 @@ $("salesRepForm").addEventListener("submit", async function(event) {
   personal_id: $("repPersonalId").value.trim() || null,
   residential_address: $("repAddress").value.trim() || null,
   phone: $("repPhone").value.trim() || null,
-  email: $("repEmail").value.trim() || null
+  email: $("repEmail").value.trim() || null,
+active: $("repStatus").value === "true"
 };
 
 const editingId = $("editingRepId").value;
@@ -787,6 +793,7 @@ editButton.addEventListener("click", async function() {
   $("repAddress").value = data.residential_address || "";
   $("repPhone").value = data.phone || "";
   $("repEmail").value = data.email || "";
+  $("repStatus").value = String(data.active);
 
   $("salesRepForm").scrollIntoView({
     behavior: "smooth",
