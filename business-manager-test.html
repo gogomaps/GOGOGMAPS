@@ -344,10 +344,32 @@
 
   </form>
 
+  <!-- COMMISSION PAYMENT HISTORY -->
+<button
+  type="button"
+  id="toggleCommissionHistoryBtn"
+  onclick="toggleCommissionHistory()"
+>
+  📋 Check History
+</button>
+
+<div id="commissionHistoryContainer" style="display: none; margin-top: 10px;">
+
   <h3>Commission Payment History</h3>
+
+  <button
+    type="button"
+    id="printCommissionHistoryBtn"
+    onclick="printCommissionHistory()"
+  >
+    🖨️ Print History
+  </button>
+
   <div id="commissionPaymentHistory">
     No payments recorded yet.
   </div>
+
+</div>
 
 </section>   
     <section>
@@ -976,7 +998,110 @@ async function loadSalesCommissionReport() {
 
   report.appendChild(table);
 }
-  // LOAD COMMISSION PAYMENT HISTORY
+    // SHOW OR HIDE COMMISSION PAYMENT HISTORY
+function toggleCommissionHistory() {
+  const container = document.getElementById("commissionHistoryContainer");
+  const button = document.getElementById("toggleCommissionHistoryBtn");
+
+  if (container.style.display === "none") {
+    container.style.display = "block";
+    button.textContent = "📋 Hide History";
+  } else {
+    container.style.display = "none";
+    button.textContent = "📋 Check History";
+  }
+}
+  // PRINT COMMISSION PAYMENT HISTORY
+function printCommissionHistory() {
+  const history = document.getElementById("commissionPaymentHistory");
+
+  if (!history.querySelector("table")) {
+    alert("No commission payment history is available to print.");
+    return;
+  }
+
+  const printWindow = window.open("", "_blank");
+
+  if (!printWindow) {
+    alert("Please allow pop-ups to print the commission history.");
+    return;
+  }
+
+  const printDocument = printWindow.document;
+
+  printDocument.open();
+  printDocument.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>GoGo Maps - Commission Payment History</title>
+      <style>
+        @page {
+          size: A4 landscape;
+          margin: 10mm;
+        }
+
+        body {
+          font-family: Arial, sans-serif;
+          font-size: 10px;
+          color: black;
+        }
+
+        h2 {
+          text-align: center;
+          font-size: 16px;
+          margin-bottom: 15px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 9px;
+        }
+
+        th, td {
+          border: 1px solid #999;
+          padding: 4px;
+          text-align: left;
+          overflow-wrap: anywhere;
+        }
+
+        th {
+          background: #eeeeee;
+        }
+
+        thead {
+          display: table-header-group;
+        }
+
+        tr {
+          break-inside: avoid;
+        }
+      </style>
+    </head>
+    <body>
+      <h2>GoGo Maps - Commission Payment History</h2>
+    </body>
+    </html>
+  `);
+
+  const printableTable = history.querySelector("table").cloneNode(true);
+
+  const firstRow = printableTable.querySelector("tr");
+  if (firstRow) {
+    const thead = printDocument.createElement("thead");
+    thead.appendChild(firstRow);
+    printableTable.insertBefore(thead, printableTable.firstChild);
+  }
+
+  printDocument.body.appendChild(
+    printDocument.importNode(printableTable, true)
+  );
+
+  printDocument.close();
+  printWindow.focus();
+  printWindow.print();
+}
 async function loadCommissionPaymentHistory() {
   const history = $("commissionPaymentHistory");
 
