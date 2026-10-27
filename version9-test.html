@@ -296,7 +296,8 @@ footer {
 
 <div class="toolbar">
   <div class="search-container">
-  <input id="search"
+  <input id="search" type="search" autocomplete="off" spellcheck="false"
+  aria-label="Search business listings"
   data-translate-placeholder="searchPlaceholder"
   placeholder="Search businesses and promotions in English">
 
@@ -745,8 +746,21 @@ async function loadBusinesses() {
   }
 }
 
-$("search").oninput = render;
-$("searchBtn").onclick = render;
+// Filter on typing, Enter, and clicking the search icon.
+function runSearch() {
+  specialsOnly = false;
+  render();
+}
+$("search").addEventListener("input", runSearch);
+$("search").addEventListener("search", runSearch);
+$("search").addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    runSearch();
+    $("search").blur();
+  }
+});
+$("searchBtn").onclick = runSearch;
 $("allBtn").onclick = () => {
   specialsOnly = false;
   render();
