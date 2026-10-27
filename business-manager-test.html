@@ -1331,7 +1331,8 @@ try {
   $("paymentOutstanding").value = "";
 
   await loadSalesCommissionReport();
-
+await loadCommissionPaymentHistory();
+  
 } finally {
   paymentButton.disabled = false;
 }
