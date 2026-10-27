@@ -22,6 +22,7 @@ nav{display:flex;flex-wrap:wrap;gap:9px}nav button{background:#e3edf6;color:#185
 <form id="loginForm" class="grid"><div><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div><div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div style="align-self:end"><button type="submit">Sign In</button></div></form></section>
 <div id="app" class="hidden">
 <section><h2>Your branch</h2><div class="grid"><div><label for="branch">Assigned branch</label><select id="branch"></select></div><div class="card">Branch status<strong id="branchStatus">—</strong></div><div class="card">Local currency<strong id="currency">—</strong></div></div><p class="muted" id="locationNote"></p></section>
+<section><h2>Branch customers</h2><p>Registered customers: <strong id="branchCustomerCount">—</strong></p><div id="branchCustomerList" aria-live="polite"></div></section>
 <section><nav id="tabs" aria-label="Branch sections">
 <button class="active" data-tab="overview">Overview</button><button data-tab="customers">Customers</button><button data-tab="adverts">Adverts</button><button data-tab="applications">Applications</button><button data-tab="reps">Sales Representatives</button><button data-tab="payments">Payments</button><button data-tab="expenses">Expenses</button><button data-tab="commissions">Commissions</button><button data-tab="reports">Reports</button>
 </nav></section>
@@ -37,7 +38,20 @@ const sections={overview:"Overview",customers:"Customers",adverts:"Advertisement
 let assigned=[];
 function message(text){$("status").textContent=text}
 function loggedOut(){$("app").classList.add("hidden");$("login").classList.remove("hidden");$("signout").classList.add("hidden");assigned=[]}
+async function loadCustomers(){
+ const code=$("branch").value;
+ const {data,error}=await db.from("gogo_branch_customers")
+  .select("customer_code,business_name,created_at")
+  .eq("location_code",code).order("created_at",{ascending:false}).limit(100);
+ if(error){message("Customer directory unavailable: "+error.message);return}
+ const count=$("branchCustomerCount");if(count)count.textContent=String((data||[]).length);
+ const list=$("branchCustomerList");if(!list)return;
+ list.replaceChildren();
+ for(const row of data||[]){const item=document.createElement("p");item.textContent=(row.customer_code||"—")+" · "+(row.business_name||"Unnamed business");list.append(item)}
+ if(!data?.length)list.textContent="No registered customers for this branch.";
+}
 function renderBranch(){
+ loadCustomers();
  const code=$("branch").value,loc=assigned.find(x=>x.location_code===code);
  if(!loc){$("branchStatus").textContent="—";$("currency").textContent="—";$("locationNote").textContent="No authorised branch selected.";return}
  $("branchStatus").textContent=loc.branch_status;
