@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GoGo Maps | Branch Manager (Development)</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf3f8;color:#193047;font:16px Arial,sans-serif}
+header{background:#155f9d;color:white;padding:23px max(20px,calc((100vw - 1100px)/2));display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+h1{margin:0;font-size:25px}header small{display:block;margin-top:7px;opacity:.85}main{max-width:1100px;margin:26px auto;padding:0 16px}
+section{background:white;padding:24px;border-radius:12px;margin-bottom:20px;box-shadow:0 3px 16px #1222}
+h2{margin:0 0 14px;font-size:21px}p{line-height:1.5}.muted{color:#5a6d80}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+label{font-weight:bold;display:block;margin-bottom:8px}input,select{font:inherit;padding:12px;width:100%;border:1px solid #b5c6d6;border-radius:7px}
+button{background:#1769aa;color:white;border:0;border-radius:7px;padding:12px 18px;font:inherit;font-weight:bold;cursor:pointer}
+button.secondary{background:#435b73}button.active{background:#155f9d;color:white}
+nav{display:flex;flex-wrap:wrap;gap:9px}nav button{background:#e3edf6;color:#185080}
+.card{background:#f2f7fb;border:1px solid #dce6ef;border-radius:10px;padding:20px}.card strong{font-size:23px;display:block;margin-top:10px}
+.notice{background:#fff7e5;border-left:4px solid #dfa22c;padding:14px;border-radius:5px}.hidden{display:none!important}
+#status{min-height:24px}footer{text-align:center;color:#647789;padding:0 15px 25px}
+</style></head><body>
+<header><div><h1>GoGo Maps · Branch Manager</h1><small>BRANCH OPERATIONS · DEVELOPMENT PREVIEW</small></div><button id="signout" class="secondary hidden">Sign Out</button></header>
+<main>
+<section id="login"><h2>Branch manager sign-in</h2><p class="muted">Sign in with your approved GoGo Maps account. Your assigned branch is checked against the database; entering a different branch code cannot grant access.</p>
+<form id="loginForm" class="grid"><div><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div><div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div style="align-self:end"><button type="submit">Sign In</button></div></form></section>
+<div id="app" class="hidden">
+<section><h2>Your branch</h2><div class="grid"><div><label for="branch">Assigned branch</label><select id="branch"></select></div><div class="card">Branch status<strong id="branchStatus">—</strong></div><div class="card">Local currency<strong id="currency">—</strong></div></div><p class="muted" id="locationNote"></p></section>
+<section><nav id="tabs" aria-label="Branch sections">
+<button class="active" data-tab="overview">Overview</button><button data-tab="customers">Customers</button><button data-tab="adverts">Adverts</button><button data-tab="applications">Applications</button><button data-tab="reps">Sales Representatives</button><button data-tab="payments">Payments</button><button data-tab="expenses">Expenses</button><button data-tab="commissions">Commissions</button><button data-tab="reports">Reports</button>
+</nav></section>
+<section><h2 id="panelTitle">Overview</h2><div class="grid" id="cards"><div class="card">Customers<strong>Pending integration</strong></div><div class="card">Active adverts<strong>Pending integration</strong></div><div class="card">Income<strong>Pending integration</strong></div><div class="card">Expenses<strong>Pending integration</strong></div></div><p class="notice" id="panelMessage">This preview displays only authorised branch settings. Customer, advertising and financial operations are disabled until branch-specific database access is implemented and verified.</p></section>
+</div>
+<section><p role="status" id="status">Checking session…</p></section>
+</main><footer>GoGo Maps · Branch Manager development preview · Not a live operations application</footer>
+<script type="module">
+import {createClient} from "https://esm.sh/@supabase/supabase-js@2";
+const db=createClient("https://adifwwlmdditbdxjwbjn.supabase.co","sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH");
+const $=id=>document.getElementById(id);
+const sections={overview:"Overview",customers:"Customers",adverts:"Advertisements",applications:"Applications",reps:"Sales Representatives",payments:"Payments",expenses:"Expenses",commissions:"Commissions",reports:"Reports"};
+let assigned=[];
+function message(text){$("status").textContent=text}
+function loggedOut(){$("app").classList.add("hidden");$("login").classList.remove("hidden");$("signout").classList.add("hidden");assigned=[]}
+function renderBranch(){
+ const code=$("branch").value,loc=assigned.find(x=>x.location_code===code);
+ if(!loc){$("branchStatus").textContent="—";$("currency").textContent="—";$("locationNote").textContent="No authorised branch selected.";return}
+ $("branchStatus").textContent=loc.branch_status;
+ $("currency").textContent=loc.currency_code;
+ $("locationNote").textContent=loc.country_name+" → "+loc.location_name+" ("+loc.location_code+"). All operational data will be restricted to this branch.";
+}
+$("branch").addEventListener("change",renderBranch);
+$("tabs").addEventListener("click",e=>{
+ const b=e.target.closest("button[data-tab]");if(!b)return;
+ for(const x of $("tabs").querySelectorAll("button"))x.classList.toggle("active",x===b);
+ $("panelTitle").textContent=sections[b.dataset.tab];
+ $("cards").classList.toggle("hidden",b.dataset.tab!=="overview");
+ $("panelMessage").textContent=b.dataset.tab==="overview"
+ ?"This preview displays only authorised branch settings. Customer, advertising and financial operations are disabled until branch-specific database access is implemented and verified."
+ :"The "+sections[b.dataset.tab]+" module is planned. Records cannot be viewed or edited until branch-scoped permissions and audit logging are tested.";
+});
+async function enter(user){
+ if(!user){loggedOut();message("Please sign in.");return}
+ const {data:members,error:mErr}=await db.from("gogo_management_memberships").select("role,location_code").eq("user_id",user.id).eq("active",true).in("role",["branch_manager","branch_staff"]);
+ if(mErr)throw mErr;
+ if(!members?.length){loggedOut();message("This account has no active branch manager or branch staff appointment. Access denied.");return}
+ const codes=[...new Set(members.map(m=>m.location_code).filter(Boolean))];
+ const {data:locations,error:lErr}=await db.from("gogo_locations").select("location_code,location_name,country_name,currency_code").in("location_code",codes);
+ if(lErr)throw lErr;
+ const {data:settings,error:sErr}=await db.from("gogo_branch_settings").select("location_code,branch_status,branch_display_name").in("location_code",codes);
+ if(sErr)throw sErr;
+ assigned=(locations||[]).filter(l=>codes.includes(l.location_code)).map(l=>({...l,...(settings||[]).find(s=>s.location_code===l.location_code)}));
+ if(!assigned.length){loggedOut();message("No authorised branch settings are available.");return}
+ $("branch").replaceChildren(...assigned.map(l=>new Option(l.branch_display_name+" ("+l.location_code+")",l.location_code)));
+ $("login").classList.add("hidden");$("app").classList.remove("hidden");$("signout").classList.remove("hidden");
+ renderBranch();message("Signed in as "+(user.email||"authorised staff")+". Branch development preview is read-only.");
+}
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();message("Signing in…");const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});$("password").value="";if(error){message(error.message);return}try{await enter(data.user)}catch(ex){loggedOut();message(ex.message)}});
+$("signout").addEventListener("click",async()=>{await db.auth.signOut();loggedOut();message("Signed out.")});
+try{const {data}=await db.auth.getUser();await enter(data.user)}catch(ex){loggedOut();message("Unable to verify branch access: "+ex.message)}
+</script></body></html>
