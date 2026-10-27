@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>GoGo Maps | Business Manager</title>
+<style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #edf2f7;
+      color: #243247;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #1769aa;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 { margin: 0 0 6px; }
+
+    main {
+      max-width: 780px;
+      margin: 24px auto;
+      padding: 0 15px 40px;
+    }
+
+    section {
+      background: white;
+      padding: 22px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px #00000010;
+    }
+
+    h2 { margin-top: 0; }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 14px 0 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #bdc7d3;
+      border-radius: 7px;
+      font: inherit;
+    }
+
+    textarea { min-height: 90px; }
+
+    button {
+      background: #1769aa;
+      color: white;
+      border: 0;
+      border-radius: 7px;
+      padding: 13px 18px;
+      margin-top: 18px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled { opacity: .6; }
+
+    .secondary { background: #526579; }
+    .hidden { display: none !important; }
+
+    .status {
+      margin-top: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .error { color: #b42318; }
+    .success { color: #167347; }
+    .note { color: #637083; font-size: 14px; }
+  
+
+/* GoGo Maps — compact dashboard presentation (test version only) */
+:root { --brand:#1769aa; --ink:#243247; --line:#dce4ed; --muted:#637083; }
+body { background:#f2f5f9; color:var(--ink); font-size:12px; line-height:1.45; }
+header.topbar { padding:12px 22px; text-align:left; box-shadow:0 2px 8px #142b4014; }
+header.topbar h1 { font-size:19px; margin:0 0 2px; letter-spacing:.2px; }
+header.topbar div { font-size:11px; opacity:.92; }
+main { max-width:1280px; margin:14px auto; padding:0 16px 32px; }
+section { padding:16px 18px; margin-bottom:12px; border-radius:9px; box-shadow:0 2px 9px #142b400c; border:1px solid #e5ebf1; }
+h2 { font-size:16px; margin:0 0 12px; }
+h3 { font-size:13px; margin:15px 0 9px; }
+p { margin:6px 0 10px; }
+label { margin:0 0 4px; font-size:11px; font-weight:600; }
+input,select,textarea { padding:7px 9px; min-height:33px; border-radius:5px; font-size:12px; background:#fff; }
+textarea { min-height:60px; resize:vertical; }
+button { padding:7px 12px; margin-top:9px; border-radius:5px; font-size:12px; font-weight:600; line-height:1.25; }
+button:hover:not(:disabled) { filter:brightness(.94); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid #66a4d7; outline-offset:2px; }
+.note { font-size:11px; }
+.account-bar { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 16px; }
+.account-bar h2 { margin:0; font-size:15px; }
+.account-bar #staffEmail { margin:0; color:var(--muted); font-size:11px; }
+.account-bar #logoutBtn { margin:0 0 0 auto; }
+#managerNavigation { display:flex; gap:5px; overflow-x:auto; padding:6px; margin:0 0 12px; background:#fff; border:1px solid var(--line); border-radius:9px; }
+#managerNavigation .nav-tab { flex:1 0 auto; margin:0; padding:10px 11px; color:#42536b; background:transparent; white-space:nowrap; border-radius:6px; }
+#managerNavigation .nav-tab:hover { background:#edf4fb; }
+#managerNavigation .nav-tab.active { background:var(--brand); color:white; }
+#manager .workspace-panel { display:none; }
+#manager .workspace-panel.active { display:block; }
+.compact-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 16px; align-items:start; }
+.compact-form .form-field { min-width:0; }
+.compact-form .form-field label { display:block; }
+.compact-form .form-full { grid-column:1/-1; }
+#locationMap { height:260px !important; margin:4px 0 !important; }
+#commissionPaymentError { padding:10px !important; margin:4px 0 !important; font-size:12px !important; }
+#salesRepList { font-size:12px; }
+#salesRepList > div { padding:6px 0 !important; }
+#salesCommissionReport, #commissionPaymentHistory { overflow-x:auto; max-width:100%; }
+#salesCommissionReport table, #commissionPaymentHistory table { min-width:660px; width:100%; border-collapse:collapse; font-size:11px !important; }
+#salesCommissionReport th, #salesCommissionReport td, #commissionPaymentHistory th, #commissionPaymentHistory td { padding:6px 7px !important; border:1px solid var(--line) !important; text-align:left; }
+#salesCommissionReport th, #commissionPaymentHistory th { background:#eaf2f9; font-weight:700; }
+#salesCommissionReport tr:nth-child(even), #commissionPaymentHistory tr:nth-child(even) { background:#f8fafc; }
+#commissionHistoryContainer { border-top:1px solid var(--line); padding-top:12px; }
+#commissionHistoryContainer > label { display:inline-block; margin:0 6px 0 12px; }
+#commissionHistoryContainer > input[type=date] { width:160px; max-width:100%; display:inline-block; }
+#commissionHistoryContainer > button { margin:0 0 8px 10px; }
+#commissionPaymentHistory { margin-top:10px; }
+#status { font-size:11px; }
+#loginSection { max-width:480px; margin:50px auto; }
+#loginSection label { margin:10px 0 5px; }
+@media (max-width:650px) {
+ main { padding:0 9px 20px; }
+ section { padding:13px; }
+ .compact-form { grid-template-columns:1fr; gap:9px; }
+ .account-bar { align-items:flex-start; }
+ #managerNavigation .nav-tab { padding:9px 11px; }
+ #commissionHistoryContainer > label { margin:6px 4px 3px 0; }
+ #commissionHistoryContainer > input[type=date] { width:100%; margin-bottom:6px; }
+ #commissionHistoryContainer > button { margin:8px 0; }
+}
+</style>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<header class="topbar">
+<h1>GoGo Maps</h1>
+<div>Private Business Manager · Test Dashboard</div>
+</header>
+<main>
+<section id="loginSection">
+<h2>Staff Sign In</h2>
+<form id="loginForm">
+<label for="email">Email Address</label>
+<input autocomplete="username" id="email" required="" type="email"/>
+<label for="password">Password</label>
+<input autocomplete="current-password" id="password" required="" type="password"/>
+<button id="loginBtn" type="submit">
+        Sign In
+      </button>
+</form>
+</section>
+<div class="hidden" id="manager">
+<section class="account-bar">
+<h2>Business Manager Dashboard</h2>
+<p id="staffEmail"></p>
+<button class="secondary" id="logoutBtn" type="button">
+        Sign Out
+      </button>
+</section><nav aria-label="Business Manager sections" id="managerNavigation"><button aria-pressed="true" class="nav-tab active" data-target="businesses" type="button">🏢 Businesses</button><button aria-pressed="false" class="nav-tab" data-target="representatives" type="button">👥 Sales Representatives</button><button aria-pressed="false" class="nav-tab" data-target="commissions" type="button">📊 Commission Report</button><button aria-pressed="false" class="nav-tab" data-target="payments" type="button">💳 Commission Payments</button><button aria-pressed="false" class="nav-tab" data-target="promotions" type="button">🏷️ Promotions</button></nav>
+<section class="workspace-panel" data-panel="businesses" id="businessesSection">
+<h2>Add a Business</h2>
+<form class="compact-form" id="businessForm">
+<div class="form-field"><label for="businessName">
+          Business Name
+        </label><input id="businessName" maxlength="200" required=""/></div>
+
+<div class="form-field"><label for="category">Category</label><select id="category" required="">
+<option value="">Choose category</option>
+<option>Restaurant</option>
+<option>Cafe</option>
+<option>Hotel</option>
+<option>Shop</option>
+<option>Supermarket</option>
+<option>Entertainment</option>
+<option>Beauty</option>
+<option>Health</option>
+<option>Transport</option>
+<option>Other</option>
+</select></div>
+
+<div class="form-field"><label for="address">Address</label><input id="address" required=""/></div>
+
+<div class="form-field"><label for="phone">Telephone</label><input id="phone" type="tel"/></div>
+
+<div class="form-full" id="locationMap" style="height:350px; width:100%; border-radius:10px; margin:15px 0;"></div>
+<div class="form-field"><label for="latitude">Latitude</label><input id="latitude" max="90" min="-90" required="" step="any" type="number"/></div>
+
+<div class="form-field"><label for="longitude">Longitude</label><input id="longitude" max="180" min="-180" required="" step="any" type="number"/></div>
+
+<div class="form-field"><label for="businessPhoto">Business Photo</label><input accept="image/*" id="businessPhoto" type="file"/></div>
+
+<p class="note form-full">Click the map to choose a business location, or enter the coordinates manually.</p></form>
+</section>
+<!-- SALES REPRESENTATIVES -->
+<section class="workspace-panel" data-panel="representatives" id="salesRepresentativesSection">
+<h2>Sales Representatives</h2>
+<h3>Register Sales Representative</h3>
+<form class="compact-form" id="salesRepForm">
+<input id="editingRepId" type="hidden" value=""/>
+<div class="form-field"><label for="repNumber">Representative Number</label><input id="repNumber" placeholder="Automatically assigned" readonly="" type="text"/></div>
+
+<div class="form-field"><label for="repName">Full Name</label><input id="repName" required="" type="text"/></div>
+
+<div class="form-field"><label for="repPersonalId">Personal ID Number</label><input id="repPersonalId" type="text"/></div>
+
+<div class="form-field"><label for="repAddress">Residential Address</label><textarea id="repAddress" rows="3"></textarea></div>
+
+<div class="form-field"><label for="repPhone">Telephone</label><input id="repPhone" type="tel"/></div>
+
+<div class="form-field"><label for="repEmail">Email Address</label><input id="repEmail" type="email"/></div>
+
+<div class="form-field"><label for="repStatus">Representative Status</label><select id="repStatus">
+<option value="true">Active</option>
+<option value="false">Inactive</option>
+</select></div>
+
+<button class="form-full" id="saveRepBtn" type="submit">
+      Save Sales Representative
+    </button>
+</form>
+<h3>Registered Sales Representatives</h3>
+<div id="salesRepList">
+    Sales representatives will appear here.
+  </div>
+<button onclick="loadSalesRepresentatives()" type="button">
+  🔄 Refresh Representatives
+</button>
+</section>
+<!-- SALES REPRESENTATIVE COMMISSION REPORT -->
+<section class="workspace-panel" data-panel="commissions" id="salesCommissionSection">
+<h2>Commission Report</h2>
+<div id="salesCommissionReport">
+    Commission information will appear here.
+  </div>
+<button onclick="loadSalesCommissionReport()" type="button">
+    🔄 Refresh Commission Report
+  </button>
+</section>
+<!-- COMMISSION PAYMENT REGISTER -->
+<section class="workspace-panel" data-panel="payments" id="commissionPaymentSection">
+<h2>Commission Payments</h2>
+<p>Record full or partial commission payments to sales representatives.</p>
+<form class="compact-form" id="commissionPaymentForm">
+<div class="form-field"><label for="paymentRep">Sales Representative</label><select id="paymentRep" required="">
+<option value="">Select Representative</option>
+</select></div>
+
+<div class="form-field"><label for="paymentOutstanding">Outstanding Commission (GEL)</label><input id="paymentOutstanding" placeholder="0.00 GEL" readonly="" type="text"/></div>
+
+<div class="form-field"><label for="paymentAmount">Payment Amount (GEL)</label><input id="paymentAmount" min="0.01" required="" step="0.01" type="number"/></div>
+
+<div class="form-field"><label for="paymentDate">Payment Date</label><input id="paymentDate" required="" type="date"/></div>
+
+<div class="form-field"><label for="paymentMethod">Payment Method</label><select id="paymentMethod">
+<option value="Bank Transfer">Bank Transfer</option>
+<option value="Cash">Cash</option>
+<option value="Other">Other</option>
+</select></div>
+
+<div class="form-field"><label for="paymentReference">Payment Reference</label><input id="paymentReference" placeholder="Optional reference number" type="text"/></div>
+
+<div class="form-field"><label for="paymentNotes">Notes</label><textarea id="paymentNotes" rows="3"></textarea></div>
+
+<!-- COMMISSION PAYMENT REJECTION MESSAGE -->
+<div class="form-full" id="commissionPaymentError" role="alert" style="
+    display: none;
+    background-color: #d60000;
+    color: white;
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+  "></div>
+<button class="form-full" id="recordCommissionPaymentBtn" type="submit">
+  Record Commission Payment
+</button>
+</form>
+<!-- COMMISSION PAYMENT HISTORY -->
+<button id="toggleCommissionHistoryBtn" onclick="toggleCommissionHistory()" type="button">
+  📋 Check History
+</button>
+<div id="commissionHistoryContainer" style="display: none; margin-top: 10px;">
+<h3>Commission Payment History</h3>
+<label for="historyDateFrom">From Date:</label>
+<input id="historyDateFrom" type="date"/>
+<label for="historyDateTo">To Date:</label>
+<input id="historyDateTo" type="date"/>
+<button id="printCommissionHistoryBtn" onclick="printCommissionHistory()" type="button">
+  🖨️ Print History
+</button>
+<div id="commissionPaymentHistory">
+    No payments recorded yet.
+  </div>
+</div>
+</section>
+<section class="workspace-panel" data-panel="promotions" id="promotionsSection">
+<h2>Add a Promotion</h2>
+<form class="compact-form" id="promotionForm">
+<div class="form-field"><label for="businessSelect">
+          Choose Business
+        </label><select id="businessSelect" required="">
+<option value="">Select a business</option>
+</select></div>
+
+<div class="form-field"><label for="offerTitle">
+          Promotion Title
+        </label><input id="offerTitle" required=""/></div>
+
+<div class="form-field"><label for="offerDescription">
+          Promotion Description
+        </label><textarea id="offerDescription" required=""></textarea></div>
+
+<div class="form-field"><label for="startDate">Start Date</label><input id="startDate" required="" type="date"/></div>
+
+<div class="form-field"><label for="endDate">End Date</label><input id="endDate" required="" type="date"/></div>
+
+<div class="form-field"><label for="promotionPhoto">Promotional Photo</label><input accept="image/*" id="promotionPhoto" multiple="" type="file"/></div>
+
+<div class="form-full" id="promotionPhotoPreviews" style="display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;"></div>
+<button class="form-full" id="promotionBtn" type="submit">
+          Save Promotion
+        </button>
+</form>
+</section>
+</div>
+<section>
+<p class="status" id="status" role="status">
+      Checking login...
+    </p>
+</section>
+</main>
+<script type="module">
+  import { createClient } from
+    "https://esm.sh/@supabase/supabase-js@2";
+
+  const supabase = createClient(
+    "https://adifwwlmdditbdxjwbjn.supabase.co",
+    "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH"
+  );
+
+  const $ = id => document.getElementById(id);
+let selectedPromotionPhotos = [];
+
+$("promotionPhoto").addEventListener("change", event => {
+  const newPhotos = Array.from(event.target.files);
+
+  if (selectedPromotionPhotos.length + newPhotos.length > 5) {
+    alert("You can select a maximum of 5 photographs.");
+    event.target.value = "";
+    return;
+  }
+
+  selectedPromotionPhotos.push(...newPhotos);
+  renderPromotionPhotoPreviews();
+  event.target.value = "";
+  });
+  function renderPromotionPhotoPreviews() {
+  const container = $("promotionPhotoPreviews");
+  container.replaceChildren();
+
+  selectedPromotionPhotos.forEach((photo, index) => {
+    const box = document.createElement("div");
+    box.style.cssText =
+      "width:120px; padding:8px; border:1px solid #ccc; border-radius:8px; text-align:center;";
+
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(photo);
+    img.style.cssText =
+      "width:100%; height:90px; object-fit:cover; border-radius:5px;";
+    img.onload = () => URL.revokeObjectURL(img.src);
+
+    const name = document.createElement("div");
+    name.textContent = photo.name;
+    name.style.cssText =
+      "font-size:11px; overflow-wrap:anywhere; margin-top:5px;";
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.textContent = "Remove ×";
+    removeBtn.style.cssText =
+      "background:#c62828; padding:6px; font-size:12px; margin-top:6px;";
+
+    removeBtn.addEventListener("click", () => {
+      selectedPromotionPhotos.splice(index, 1);
+      renderPromotionPhotoPreviews();
+    });
+
+    box.append(img, name, removeBtn);
+    container.appendChild(box);
+  });
+}
+    
+  function status(text, error = false) {
+    $("status").textContent = text;
+    $("status").className =
+      "status " + (error ? "error" : "success");
+  }
+
+  function showLoggedOut() {
+    $("manager").classList.add("hidden");
+    $("loginSection").classList.remove("hidden");
+    $("staffEmail").textContent = "";
+  }
+
+  async function verifyStaff(user) {
+    if (!user) return false;
+
+    const { data, error } = await supabase
+      .from("staff_users")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) throw error;
+    return !!data;
+  }
+
+  async function loadBusinesses() {
+    const { data, error } = await supabase
+      .from("businesses")
+      .select("id,name")
+      .order("name");
+
+    if (error) throw error;
+
+    const select = $("businessSelect");
+    select.replaceChildren();
+    select.add(new Option("Select a business", ""));
+
+    (data || []).forEach(business => {
+      select.add(
+        new Option(business.name, business.id)
+      );
+    });
+  }
+
+  async function showLoggedIn(user) {
+    $("loginSection").classList.add("hidden");
+    $("manager").classList.remove("hidden");
+
+    $("staffEmail").textContent =
+      "Signed in as: " + (user.email || "");
+
+    await loadBusinesses();
+    status("Authorised staff access confirmed.");
+  }
+
+  async function checkAccess() {
+    showLoggedOut();
+
+    try {
+      const { data, error } =
+        await supabase.auth.getUser();
+
+      if (error || !data.user) {
+        status("Please sign in.");
+        return;
+      }
+
+      if (!(await verifyStaff(data.user))) {
+        status(
+          "This account is not authorised staff.",
+          true
+        );
+        return;
+      }
+
+      await showLoggedIn(data.user);
+
+    } catch (error) {
+      showLoggedOut();
+      status(error.message, true);
+    }
+  }
+
+  $("loginForm").addEventListener(
+    "submit",
+    async event => {
+      event.preventDefault();
+      $("loginBtn").disabled = true;
+
+      try {
+        const { data, error } =
+          await supabase.auth.signInWithPassword({
+            email: $("email").value.trim(),
+            password: $("password").value
+          });
+
+        if (error) throw error;
+
+        $("password").value = "";
+
+        if (!(await verifyStaff(data.user))) {
+          showLoggedOut();
+          status(
+            "This account is not authorised staff.",
+            true
+          );
+          return;
+        }
+
+        await showLoggedIn(data.user);
+
+      } catch (error) {
+        showLoggedOut();
+        status(error.message, true);
+      } finally {
+        $("loginBtn").disabled = false;
+      }
+    }
+  );
+
+  $("logoutBtn").addEventListener(
+    "click",
+    async () => {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        status(error.message, true);
+        return;
+      }
+
+      showLoggedOut();
+      status("Signed out successfully.");
+    }
+  );
+
+  $("businessForm").addEventListener(
+    "submit",
+    async event => {
+      event.preventDefault();
+      $("businessBtn").disabled = true;
+
+      try {
+        const { data: userData, error: authError } =
+          await supabase.auth.getUser();
+
+        if (
+          authError ||
+          !userData.user ||
+          !(await verifyStaff(userData.user))
+        ) {
+          throw new Error("Staff access required.");
+        }
+let photoUrl = null;
+const photoFile = $("businessPhoto").files[0];
+
+if (photoFile) {
+  const fileName = crypto.randomUUID() + "-" + photoFile.name;
+
+  const { error: uploadError } = await supabase.storage
+    .from("business-photos")
+    .upload(fileName, photoFile);
+
+  if (uploadError) throw uploadError;
+
+  const { data: photoData } = supabase.storage
+    .from("business-photos")
+    .getPublicUrl(fileName);
+
+  photoUrl = photoData.publicUrl;
+}
+
+        const business = {
+          name: $("businessName").value.trim(),
+          category: $("category").value,
+          address: $("address").value.trim(),
+          phone: $("phone").value.trim(),
+          latitude: Number($("latitude").value),
+          longitude: Number($("longitude").value),
+          photo_url: photoUrl
+        };
+
+        const { error } = await supabase
+          .from("businesses")
+          .insert(business);
+
+        if (error) throw error;
+
+        $("businessForm").reset();
+        await loadBusinesses();
+
+        status("Business saved successfully.");
+
+      } catch (error) {
+        status(error.message, true);
+      } finally {
+        $("businessBtn").disabled = false;
+      }
+    }
+  );
+
+  $("promotionForm").addEventListener(
+    "submit",
+    async event => {
+      event.preventDefault();
+      $("promotionBtn").disabled = true;
+
+      try {
+        const { data: userData, error: authError } =
+          await supabase.auth.getUser();
+
+        if (
+          authError ||
+          !userData.user ||
+          !(await verifyStaff(userData.user))
+        ) {
+          throw new Error("Staff access required.");
+        }
+
+        if ($("endDate").value < $("startDate").value) {
+          throw new Error(
+            "End date must not be before start date."
+          );
+        }
+let promotionPhotoUrl = null;
+const promotionPhotoUrls = [];
+const promotionPhotoFiles = selectedPromotionPhotos;
+if (promotionPhotoFiles.length > 5) {
+  throw new Error("You can upload a maximum of 5 promotional photos.");
+}
+
+for (const photoFile of promotionPhotoFiles) {
+  const fileName = crypto.randomUUID() + "-" + photoFile.name;
+
+  const { error: uploadError } = await supabase.storage
+    .from("promotion-photos")
+    .upload(fileName, photoFile);
+
+  if (uploadError) throw uploadError;
+
+  const { data: photoData } = supabase.storage
+    .from("promotion-photos")
+    .getPublicUrl(fileName);
+
+  promotionPhotoUrls.push(photoData.publicUrl);
+}
+
+promotionPhotoUrl = promotionPhotoUrls[0] || null;
+        const promotion = {
+          business_id: $("businessSelect").value,
+          offer_title: $("offerTitle").value.trim(),
+          offer_description:
+            $("offerDescription").value.trim(),
+          start_date: $("startDate").value,
+          end_date: $("endDate").value,
+          promotional_photo_url: promotionPhotoUrl,
+          promotional_photo_urls: promotionPhotoUrls
+        };
+
+        const { error } = await supabase
+          .from("promotions")
+          .insert(promotion);
+
+        if (error) throw error;
+
+        $("promotionForm").reset();
+selectedPromotionPhotos = [];
+renderPromotionPhotoPreviews();
+status("Promotion saved successfully.");
+
+      } catch (error) {
+        status(error.message, true);
+      } finally {
+        $("promotionBtn").disabled = false;
+      }
+    }
+  );
+
+  const locationMap = L.map("locationMap").setView([41.6168, 41.6367], 13);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; OpenStreetMap contributors"
+}).addTo(locationMap);
+
+let selectedLocationMarker = null;
+
+locationMap.on("click", function(event) {
+  const lat = event.latlng.lat;
+  const lng = event.latlng.lng;
+
+  $("latitude").value = lat.toFixed(6);
+  $("longitude").value = lng.toFixed(6);
+
+  if (selectedLocationMarker) {
+    locationMap.removeLayer(selectedLocationMarker);
+  }
+
+  selectedLocationMarker = L.marker([lat, lng]).addTo(locationMap);
+});
+
+  
+  // SAVE SALES REPRESENTATIVE
+$("salesRepForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const saveButton = $("saveRepBtn");
+  saveButton.disabled = true;
+
+  try {
+    const { data: userData, error: authError } =
+      await supabase.auth.getUser();
+
+    if (
+      authError ||
+      !userData.user ||
+      !(await verifyStaff(userData.user))
+    ) {
+      throw new Error("Staff access required.");
+    }
+
+   const repDetails = {
+  full_name: $("repName").value.trim(),
+  personal_id: $("repPersonalId").value.trim() || null,
+  residential_address: $("repAddress").value.trim() || null,
+  phone: $("repPhone").value.trim() || null,
+  email: $("repEmail").value.trim() || null,
+active: $("repStatus").value === "true"
+};
+
+const editingId = $("editingRepId").value;
+
+let saveResult;
+
+if (editingId) {
+  // Update an existing representative
+  saveResult = await supabase
+    .from("sales_representatives")
+    .update(repDetails)
+    .eq("id", editingId)
+    .select("id")
+    .single();
+} else {
+  // Register a new representative
+  saveResult = await supabase
+    .from("sales_representatives")
+    .insert(repDetails)
+    .select("id")
+    .single();
+}
+
+if (saveResult.error) throw saveResult.error;
+
+    alert("Sales representative saved successfully!");
+    $("salesRepForm").reset();
+    $("editingRepId").value = "";
+await loadSalesRepresentatives();
+  } catch (error) {
+    alert("Could not save representative: " + error.message);
+  } finally {
+    saveButton.disabled = false;
+  }
+});
+  // DISPLAY REGISTERED SALES REPRESENTATIVES
+async function loadSalesRepresentatives() {
+  const list = $("salesRepList");
+list.textContent = "Loading sales representatives...";
+list.style.color = "#333";
+  const { data, error } = await supabase
+    .from("sales_representatives")
+    .select("id, rep_number, full_name, phone, active")
+    .order("rep_number", { ascending: true });
+
+  if (error) {
+    list.textContent = "Could not load representatives: " + error.message;
+    return;
+  }
+
+  list.replaceChildren();
+
+  if (!data || data.length === 0) {
+    list.textContent = "No representatives registered.";
+    return;
+  }
+
+  data.forEach(rep => {
+    const row = document.createElement("div");
+    row.style.padding = "10px";
+    row.style.borderBottom = "1px solid #ddd";
+
+    row.textContent =
+  (rep.active ? "🟢 " : "🔴 ") +
+  rep.rep_number + " — " +
+  rep.full_name + " — " +
+  (rep.phone || "No telephone") + " — " +
+  (rep.active ? "Active" : "Inactive");
+const editButton = document.createElement("button");
+editButton.type = "button";
+editButton.textContent = "✏️ Edit";
+editButton.style.marginLeft = "10px";
+editButton.style.padding = "4px 10px";
+editButton.style.fontSize = "12px";
+editButton.addEventListener("click", async function() {
+  const { data, error } = await supabase
+    .from("sales_representatives")
+    .select("id, rep_number, full_name, personal_id, residential_address, phone, email, active")
+    .eq("id", rep.id)
+    .single();
+
+  if (error) {
+    alert("Could not load representative: " + error.message);
+    return;
+  }
+
+  $("editingRepId").value = data.id;
+  $("repNumber").value = data.rep_number || "";
+  $("repName").value = data.full_name || "";
+  $("repPersonalId").value = data.personal_id || "";
+  $("repAddress").value = data.residential_address || "";
+  $("repPhone").value = data.phone || "";
+  $("repEmail").value = data.email || "";
+  $("repStatus").value = String(data.active);
+
+  $("salesRepForm").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+});
+
+row.appendChild(editButton);
+    list.appendChild(row);
+  });
+
+    const message = document.createElement("div");
+  message.textContent = "✓ Representatives updated successfully";
+  message.style.color = "green";
+  message.style.fontWeight = "bold";
+  message.style.padding = "10px 0";
+  list.appendChild(message);
+}
+  // SALES REPRESENTATIVE COMMISSION REPORT
+async function loadSalesCommissionReport() {
+  const report = $("salesCommissionReport");
+  report.textContent = "Loading commission information...";
+
+  const { data, error } = await supabase
+    .from("sales_rep_commission_summary")
+    .select("*")
+    .order("rep_number", { ascending: true });
+
+  if (error) {
+    report.textContent = "Could not load commissions: " + error.message;
+    return;
+  }
+
+  report.replaceChildren();
+
+  if (!data || data.length === 0) {
+    report.textContent = "No commission records found.";
+    return;
+  }
+
+  const table = document.createElement("table");
+  table.style.width = "100%";
+  table.style.borderCollapse = "collapse";
+
+  const headings = [
+  "Rep Number",
+  "Representative Name",
+  "Advertisements",
+  "Commission Earned",
+  "Commission Paid",
+  "Outstanding"
+];
+
+  const headerRow = table.insertRow();
+
+  headings.forEach(heading => {
+    const cell = document.createElement("th");
+    cell.textContent = heading;
+    cell.style.padding = "10px";
+    cell.style.border = "1px solid #ddd";
+    headerRow.appendChild(cell);
+  });
+
+  data.forEach(rep => {
+    const row = table.insertRow();
+
+   const values = [
+  rep.rep_number,
+  rep.representative_name,
+  rep.total_advertisements,
+  rep.total_commission_earned,
+  rep.total_commission_paid,
+  rep.total_commission_outstanding_to_date
+];
+
+    values.forEach((value, index) => {
+      const cell = row.insertCell();
+      cell.textContent = index >= 3
+          ? Number(value || 0).toFixed(2) + " GEL"
+          : String(value ?? 0);
+
+      cell.style.padding = "10px";
+      cell.style.border = "1px solid #ddd";
+    });
+  });
+
+  report.appendChild(table);
+}
+    // SHOW OR HIDE COMMISSION PAYMENT HISTORY
+function toggleCommissionHistory() {
+  const container = document.getElementById("commissionHistoryContainer");
+  const button = document.getElementById("toggleCommissionHistoryBtn");
+
+  if (container.style.display === "none") {
+    container.style.display = "block";
+    button.textContent = "📋 Hide History";
+  } else {
+    container.style.display = "none";
+    button.textContent = "📋 Check History";
+  }
+}
+  window.toggleCommissionHistory = toggleCommissionHistory;
+// PRINT COMMISSION PAYMENT HISTORY
+async function printCommissionHistory() {
+  const dateFrom = document.getElementById("historyDateFrom").value;
+  const dateTo = document.getElementById("historyDateTo").value;
+
+  if (!dateFrom || !dateTo) {
+    alert("Please select both From Date and To Date.");
+    return;
+  }
+
+  if (dateFrom > dateTo) {
+    alert("From Date cannot be later than To Date.");
+    return;
+  }
+
+  const printWindow = window.open("", "_blank");
+
+  if (!printWindow) {
+    alert("Please allow pop-ups to print commission history.");
+    return;
+  }
+
+  try {
+    const allPayments = [];
+    const batchSize = 500;
+    let start = 0;
+
+    while (true) {
+      const { data, error } = await supabase
+        .from("commission_payments")
+        .select(`
+          id,
+          payment_date,
+          payment_amount,
+          payment_method,
+          payment_reference,
+          notes,
+          sales_representatives (
+            rep_number,
+            full_name
+          )
+        `)
+        .gte("payment_date", dateFrom)
+        .lte("payment_date", dateTo)
+        .order("payment_date", { ascending: false })
+        .order("id", { ascending: true })
+        .range(start, start + batchSize - 1);
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        break;
+      }
+
+      allPayments.push(...data);
+
+      if (data.length < batchSize) {
+        break;
+      }
+
+      start += batchSize;
+    }
+
+    if (allPayments.length === 0) {
+      printWindow.close();
+      alert("No commission payments found between the selected dates.");
+      return;
+    }
+
+    const printDocument = printWindow.document;
+
+    printDocument.open();
+    printDocument.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>GoGo Maps - Commission Payment History</title>
+        <style>
+          @page {
+            size: A4 landscape;
+            margin: 10mm;
+          }
+
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            color: black;
+          }
+
+          h2 {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 12px;
+          }
+
+          p {
+            text-align: center;
+            font-size: 12px;
+          }
+
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+          }
+
+          th, td {
+            border: 1px solid #999;
+            padding: 4px;
+            text-align: left;
+            overflow-wrap: anywhere;
+          }
+
+          th {
+            background: #eeeeee;
+          }
+
+          thead {
+            display: table-header-group;
+          }
+
+          tr {
+            break-inside: avoid;
+          }
+        </style>
+      </head>
+      <body>
+        <h2>GoGo Maps - Commission Payment History</h2>
+        <p id="paymentPeriod"></p>
+        <p id="paymentCount"></p>
+      </body>
+      </html>
+    `);
+    printDocument.close();
+
+    printDocument.getElementById("paymentPeriod").textContent =
+      "Payment period: " + dateFrom + " to " + dateTo;
+
+    printDocument.getElementById("paymentCount").textContent =
+      "Total payments: " + allPayments.length;
+
+    const table = printDocument.createElement("table");
+    const thead = printDocument.createElement("thead");
+    const headerRow = printDocument.createElement("tr");
+
+    const headings = [
+      "Payment Date",
+      "Rep Number",
+      "Representative Name",
+      "Amount",
+      "Payment Method",
+      "Reference",
+      "Notes"
+    ];
+
+    headings.forEach(heading => {
+      const th = printDocument.createElement("th");
+      th.textContent = heading;
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody = printDocument.createElement("tbody");
+
+    allPayments.forEach(payment => {
+      const row = printDocument.createElement("tr");
+
+      const values = [
+        payment.payment_date || "",
+        payment.sales_representatives?.rep_number || "",
+        payment.sales_representatives?.full_name || "",
+        Number(payment.payment_amount || 0).toFixed(2) + " GEL",
+        payment.payment_method || "",
+        payment.payment_reference || "",
+        payment.notes || ""
+      ];
+
+      values.forEach(value => {
+        const td = printDocument.createElement("td");
+        td.textContent = value;
+        row.appendChild(td);
+      });
+
+      tbody.appendChild(row);
+    });
+
+    table.appendChild(tbody);
+    printDocument.body.appendChild(table);
+
+    printWindow.focus();
+
+    setTimeout(() => {
+      printWindow.print();
+    }, 300);
+
+  } catch (error) {
+    printWindow.close();
+    alert("Could not print commission history: " + error.message);
+  }
+}
+  window.printCommissionHistory = printCommissionHistory;
+async function loadCommissionPaymentHistory() {
+  const history = $("commissionPaymentHistory");
+
+  history.textContent = "Loading commission payments...";
+
+  const { data, error } = await supabase
+    .from("commission_payments")
+    .select(`
+      id,
+      payment_date,
+      payment_amount,
+      payment_method,
+      payment_reference,
+      notes,
+      sales_representatives (
+        rep_number,
+        full_name
+      )
+    `)
+    .order("payment_date", { ascending: false })
+
+  if (error) {
+    history.textContent =
+      "Could not load commission payments: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    history.textContent = "No commission payments recorded yet.";
+    return;
+  }
+
+  // DISPLAY COMMISSION PAYMENT HISTORY TABLE
+history.replaceChildren();
+
+const table = document.createElement("table");
+table.style.width = "100%";
+table.style.borderCollapse = "collapse";
+table.style.fontSize = "10px";
+table.style.lineHeight = "1.2";
+const headings = [
+  "Payment Date",
+  "Rep Number",
+  "Representative Name",
+  "Amount",
+  "Payment Method",
+  "Reference",
+  "Notes"
+];
+
+const headerRow = table.insertRow();
+
+headings.forEach(heading => {
+  const cell = document.createElement("th");
+  cell.textContent = heading;
+  cell.style.padding = "3px 5px";
+  cell.style.border = "1px solid #ddd";
+  headerRow.appendChild(cell);
+});
+
+data.forEach(payment => {
+  const row = table.insertRow();
+
+  const values = [
+    payment.payment_date,
+    payment.sales_representatives?.rep_number || "",
+    payment.sales_representatives?.full_name || "",
+    Number(payment.payment_amount).toFixed(2) + " GEL",
+    payment.payment_method || "",
+    payment.payment_reference || "",
+    payment.notes || ""
+  ];
+
+  values.forEach(value => {
+    const cell = row.insertCell();
+    cell.textContent = value;
+    cell.style.padding = "3px 5px";
+    cell.style.border = "1px solid #ddd";
+  });
+});
+
+history.appendChild(table);
+}
+  // LOAD REPRESENTATIVES FOR COMMISSION PAYMENTS
+async function loadCommissionPaymentRepresentatives() {
+  const dropdown = $("paymentRep");
+
+  dropdown.replaceChildren();
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "Select Representative";
+  dropdown.appendChild(placeholder);
+
+  const { data, error } = await supabase
+    .from("sales_representatives")
+    .select("id, rep_number, full_name")
+    .order("rep_number", { ascending: true });
+
+  if (error) {
+    alert("Could not load representatives: " + error.message);
+    return;
+  }
+
+  (data || []).forEach(rep => {
+    const option = document.createElement("option");
+
+    option.value = rep.id;
+    option.textContent = rep.rep_number + " — " + rep.full_name;
+
+    dropdown.appendChild(option);
+  });
+}
+  // DISPLAY OUTSTANDING COMMISSION FOR SELECTED REPRESENTATIVE
+async function loadSelectedRepresentativeBalance() {
+  const representativeId = $("paymentRep").value;
+  const outstandingField = $("paymentOutstanding");
+
+  outstandingField.value = "";
+
+  if (!representativeId) {
+    outstandingField.value = "0.00 GEL";
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("sales_rep_commission_summary")
+    .select("total_commission_outstanding_to_date")
+    .eq("user_id", representativeId)
+    .single();
+
+  if (error) {
+    outstandingField.value = "Unable to load balance";
+    alert("Could not load commission balance: " + error.message);
+    return;
+  }
+
+  const balance = Number(
+    data.total_commission_outstanding_to_date || 0
+  );
+
+  outstandingField.value = balance.toFixed(2) + " GEL";
+}
+
+// UPDATE BALANCE WHEN REPRESENTATIVE IS SELECTED
+$("paymentRep").addEventListener(
+  "change",
+  loadSelectedRepresentativeBalance
+);
+  // COMMISSION PAYMENT FORM VALIDATION
+$("commissionPaymentForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+$("commissionPaymentError").style.display = "none";
+$("commissionPaymentError").textContent = "";
+  const representativeId = $("paymentRep").value;
+  const paymentAmount = Number($("paymentAmount").value);
+
+  if (!representativeId) {
+    alert("Please select a sales representative.");
+    return;
+  }
+
+  if (!Number.isFinite(paymentAmount) || paymentAmount <= 0) {
+    alert("Please enter a valid payment amount.");
+    return;
+  }
+ // CHECK THE CURRENT OUTSTANDING COMMISSION
+  const { data, error } = await supabase
+    .from("sales_rep_commission_summary")
+    .select("total_commission_outstanding_to_date")
+    .eq("user_id", representativeId)
+    .single();
+
+  if (error) {
+    alert("Could not check outstanding commission: " + error.message);
+    return;
+  }
+
+  const outstandingBalance = Number(
+    data.total_commission_outstanding_to_date || 0
+  );
+
+ if (Math.round(paymentAmount * 100) > Math.round(outstandingBalance * 100)) {
+  const errorBox = $("commissionPaymentError");
+
+  errorBox.textContent =
+    "⛔ PAYMENT REJECTED — Payment exceeds the outstanding commission of " +
+    outstandingBalance.toFixed(2) + " GEL.";
+
+  errorBox.style.display = "block";
+
+  errorBox.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  return;
+}
+ // RECORD THE COMMISSION PAYMENT IN SUPABASE
+const paymentButton = $("recordCommissionPaymentBtn");
+paymentButton.disabled = true;
+
+try {
+  const { error: paymentError } = await supabase
+    .from("commission_payments")
+    .insert({
+      representative_id: representativeId,
+      payment_amount: paymentAmount,
+      payment_date: $("paymentDate").value,
+      payment_method: $("paymentMethod").value,
+      payment_reference: $("paymentReference").value.trim() || null,
+      notes: $("paymentNotes").value.trim() || null
+    });
+
+  if (paymentError) {
+    const errorBox = $("commissionPaymentError");
+    errorBox.textContent = "⛔ PAYMENT REJECTED — " + paymentError.message;
+    errorBox.style.display = "block";
+    return;
+  }
+
+  alert("Commission payment recorded successfully.");
+
+  $("commissionPaymentForm").reset();
+  $("paymentOutstanding").value = "";
+
+  await loadSalesCommissionReport();
+await loadCommissionPaymentHistory();
+  
+} finally {
+  paymentButton.disabled = false;
+}
+});
+  checkAccess();
+  loadSalesRepresentatives();
+  loadSalesCommissionReport();
+   loadCommissionPaymentRepresentatives();
+  loadCommissionPaymentHistory();
+</script>
+<script>
+// Presentation-only navigation. Existing business/database functions are unchanged.
+(function () {
+  const manager = document.getElementById('manager');
+  const buttons = Array.from(document.querySelectorAll('#managerNavigation .nav-tab'));
+  const panels = Array.from(document.querySelectorAll('#manager .workspace-panel'));
+  function activatePanel(name) {
+    buttons.forEach(button => {
+      const active = button.dataset.target === name;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    panels.forEach(panel => panel.classList.toggle('active', panel.dataset.panel === name));
+    if (name === 'businesses') {
+      setTimeout(() => window.dispatchEvent(new Event('resize')), 180);
+    }
+  }
+  buttons.forEach(button => button.addEventListener('click', () => activatePanel(button.dataset.target)));
+  activatePanel('businesses');
+  new MutationObserver(() => {
+    if (!manager.classList.contains('hidden')) {
+      setTimeout(() => window.dispatchEvent(new Event('resize')), 180);
+    }
+  }).observe(manager, { attributes: true, attributeFilter: ['class'] });
+})();
+</script></body>
+</html>
