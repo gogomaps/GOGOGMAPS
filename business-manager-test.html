@@ -355,15 +355,22 @@
 
 <div id="commissionHistoryContainer" style="display: none; margin-top: 10px;">
 
-  <h3>Commission Payment History</h3>
+ 
+ <h3>Commission Payment History</h3>
 
-  <button
-    type="button"
-    id="printCommissionHistoryBtn"
-    onclick="printCommissionHistory()"
-  >
-    🖨️ Print History
-  </button>
+<label for="historyDateFrom">From Date:</label>
+<input type="date" id="historyDateFrom">
+
+<label for="historyDateTo">To Date:</label>
+<input type="date" id="historyDateTo">
+
+<button
+  type="button"
+  id="printCommissionHistoryBtn"
+  onclick="printCommissionHistory()"
+>
+  🖨️ Print History
+</button>
 
   <div id="commissionPaymentHistory">
     No payments recorded yet.
@@ -1012,96 +1019,209 @@ function toggleCommissionHistory() {
   }
 }
   window.toggleCommissionHistory = toggleCommissionHistory;
-  // PRINT COMMISSION PAYMENT HISTORY
-function printCommissionHistory() {
-  const history = document.getElementById("commissionPaymentHistory");
+// PRINT COMMISSION PAYMENT HISTORY
+async function printCommissionHistory() {
+  const dateFrom = document.getElementById("historyDateFrom").value;
+  const dateTo = document.getElementById("historyDateTo").value;
 
-  if (!history.querySelector("table")) {
-    alert("No commission payment history is available to print.");
+  if (!dateFrom || !dateTo) {
+    alert("Please select both From Date and To Date.");
+    return;
+  }
+
+  if (dateFrom > dateTo) {
+    alert("From Date cannot be later than To Date.");
     return;
   }
 
   const printWindow = window.open("", "_blank");
 
   if (!printWindow) {
-    alert("Please allow pop-ups to print the commission history.");
+    alert("Please allow pop-ups to print commission history.");
     return;
   }
 
-  const printDocument = printWindow.document;
+  try {
+    const allPayments = [];
+    const batchSize = 500;
+    let start = 0;
 
-  printDocument.open();
-  printDocument.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>GoGo Maps - Commission Payment History</title>
-      <style>
-        @page {
-          size: A4 landscape;
-          margin: 10mm;
-        }
+    while (true) {
+      const { data, error } = await supabase
+        .from("commission_payments")
+        .select(`
+          id,
+          payment_date,
+          payment_amount,
+          payment_method,
+          payment_reference,
+          notes,
+          sales_representatives (
+            rep_number,
+            full_name
+          )
+        `)
+        .gte("payment_date", dateFrom)
+        .lte("payment_date", dateTo)
+        .order("payment_date", { ascending: false })
+        .order("id", { ascending: true })
+        .range(start, start + batchSize - 1);
 
-        body {
-          font-family: Arial, sans-serif;
-          font-size: 10px;
-          color: black;
-        }
+      if (error) {
+        throw error;
+      }
 
-        h2 {
-          text-align: center;
-          font-size: 16px;
-          margin-bottom: 15px;
-        }
+      if (!data || data.length === 0) {
+        break;
+      }
 
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 9px;
-        }
+      allPayments.push(...data);
 
-        th, td {
-          border: 1px solid #999;
-          padding: 4px;
-          text-align: left;
-          overflow-wrap: anywhere;
-        }
+      if (data.length < batchSize) {
+        break;
+      }
 
-        th {
-          background: #eeeeee;
-        }
+      start += batchSize;
+    }
 
-        thead {
-          display: table-header-group;
-        }
+    if (allPayments.length === 0) {
+      printWindow.close();
+      alert("No commission payments found between the selected dates.");
+      return;
+    }
 
-        tr {
-          break-inside: avoid;
-        }
-      </style>
-    </head>
-    <body>
-      <h2>GoGo Maps - Commission Payment History</h2>
-    </body>
-    </html>
-  `);
+    const printDocument = printWindow.document;
 
-  const printableTable = history.querySelector("table").cloneNode(true);
+    printDocument.open();
+    printDocument.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>GoGo Maps - Commission Payment History</title>
+        <style>
+          @page {
+            size: A4 landscape;
+            margin: 10mm;
+          }
 
-  const firstRow = printableTable.querySelector("tr");
-  if (firstRow) {
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            color: black;
+          }
+
+          h2 {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 12px;
+          }
+
+          p {
+            text-align: center;
+            font-size: 12px;
+          }
+
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+          }
+
+          th, td {
+            border: 1px solid #999;
+            padding: 4px;
+            text-align: left;
+            overflow-wrap: anywhere;
+          }
+
+          th {
+            background: #eeeeee;
+          }
+
+          thead {
+            display: table-header-group;
+          }
+
+          tr {
+            break-inside: avoid;
+          }
+        </style>
+      </head>
+      <body>
+        <h2>GoGo Maps - Commission Payment History</h2>
+        <p id="paymentPeriod"></p>
+        <p id="paymentCount"></p>
+      </body>
+      </html>
+    `);
+    printDocument.close();
+
+    printDocument.getElementById("paymentPeriod").textContent =
+      "Payment period: " + dateFrom + " to " + dateTo;
+
+    printDocument.getElementById("paymentCount").textContent =
+      "Total payments: " + allPayments.length;
+
+    const table = printDocument.createElement("table");
     const thead = printDocument.createElement("thead");
-    thead.appendChild(firstRow);
-    printableTable.insertBefore(thead, printableTable.firstChild);
+    const headerRow = printDocument.createElement("tr");
+
+    const headings = [
+      "Payment Date",
+      "Rep Number",
+      "Representative Name",
+      "Amount",
+      "Payment Method",
+      "Reference",
+      "Notes"
+    ];
+
+    headings.forEach(heading => {
+      const th = printDocument.createElement("th");
+      th.textContent = heading;
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody = printDocument.createElement("tbody");
+
+    allPayments.forEach(payment => {
+      const row = printDocument.createElement("tr");
+
+      const values = [
+        payment.payment_date || "",
+        payment.sales_representatives?.rep_number || "",
+        payment.sales_representatives?.full_name || "",
+        Number(payment.payment_amount || 0).toFixed(2) + " GEL",
+        payment.payment_method || "",
+        payment.payment_reference || "",
+        payment.notes || ""
+      ];
+
+      values.forEach(value => {
+        const td = printDocument.createElement("td");
+        td.textContent = value;
+        row.appendChild(td);
+      });
+
+      tbody.appendChild(row);
+    });
+
+    table.appendChild(tbody);
+    printDocument.body.appendChild(table);
+
+    printWindow.focus();
+
+    setTimeout(() => {
+      printWindow.print();
+    }, 300);
+
+  } catch (error) {
+    printWindow.close();
+    alert("Could not print commission history: " + error.message);
   }
-
-  printDocument.body.appendChild(
-    printDocument.importNode(printableTable, true)
-  );
-
-  printDocument.close();
-  printWindow.focus();
-  printWindow.print();
 }
   window.printCommissionHistory = printCommissionHistory;
 async function loadCommissionPaymentHistory() {
@@ -1123,7 +1243,7 @@ async function loadCommissionPaymentHistory() {
         full_name
       )
     `)
-    .order("payment_date", { ascending: false });
+    .order("payment_date", { ascending: false })
 
   if (error) {
     history.textContent =
