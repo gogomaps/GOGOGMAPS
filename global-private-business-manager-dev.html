@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GoGo Maps | Global Private Business Manager (Development)</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#16283d;background:#eef3f8}*{box-sizing:border-box}
+body{margin:0}header{background:#135b97;color:white;padding:22px max(20px,calc((100vw - 1160px)/2));display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
+h1{font-size:24px;margin:0}header small{display:block;opacity:.86;margin-top:5px}
+main{max-width:1160px;margin:26px auto;padding:0 18px}section{background:white;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 3px 18px #1232}
+h2{margin:0 0 16px;font-size:21px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+label{display:block;font-weight:bold;margin-bottom:7px}input,select{width:100%;padding:12px;border:1px solid #b8c8d8;border-radius:7px;font:inherit}
+button{background:#1769aa;color:white;border:0;border-radius:7px;padding:12px 18px;cursor:pointer;font-weight:bold}
+button:disabled{opacity:.55;cursor:not-allowed}.secondary{background:#3b526b}.hidden{display:none}
+.kpi{background:#f3f7fb;border:1px solid #d9e4ee;border-radius:10px;padding:18px}.kpi strong{display:block;font-size:22px;margin-top:8px}
+.muted{color:#56697d}.notice{padding:14px;background:#fff7e6;border-left:4px solid #e0a328;border-radius:5px}
+#status{min-height:24px}nav{display:flex;flex-wrap:wrap;gap:8px}nav button{background:#dfeaf5;color:#13436e}nav button.active{background:#1769aa;color:white}
+footer{padding:10px 20px 35px;text-align:center;color:#617286}
+</style></head><body>
+<header><div><h1>GoGo Maps — Private Business Manager</h1><small>GLOBAL HEAD OFFICE · DEVELOPMENT PREVIEW</small></div><button id="logout" class="secondary hidden">Sign Out</button></header>
+<main>
+<section id="loginPanel"><h2>Authorised sign-in</h2><p class="muted">Use your existing GoGo Maps login. Global access requires an approved Global Owner or Global Admin appointment.</p>
+<form id="loginForm" class="grid"><div><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div><div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div style="align-self:end"><button type="submit">Sign In</button></div></form></section>
+<div id="workspace" class="hidden">
+<section><h2>Global overview</h2><div class="grid">
+<div><label for="country">Country</label><select id="country"><option value="">All countries</option></select></div>
+<div><label for="branch">Branch / region</label><select id="branch"><option value="">All authorised branches</option></select></div></div>
+<p class="muted" id="scope">Select a country or branch to review its scope.</p></section>
+<section><nav id="tabs" aria-label="Management sections">
+<button class="active" data-tab="overview">Overview</button><button data-tab="customers">Customers</button><button data-tab="adverts">Advertisements</button><button data-tab="representatives">Representatives</button><button data-tab="income">Income</button><button data-tab="expenses">Expenses</button><button data-tab="commissions">Commissions</button><button data-tab="applications">Applications</button><button data-tab="office">Office 🔒</button>
+</nav></section>
+<section><h2 id="sectionTitle">Overview</h2><div class="grid" id="overviewCards">
+<div class="kpi">Configured branches<strong id="branchCount">—</strong></div><div class="kpi">Customers<strong>Not connected</strong></div><div class="kpi">Advertising income<strong>Not connected</strong></div><div class="kpi">Expenses<strong>Not connected</strong></div></div>
+<p id="panelText" class="notice">This is a secure development shell, not a live financial report. Customer, advertising, payment and expense records will only be connected after branch-level data permissions are implemented and tested.</p></section>
+</div>
+<section><p id="status" role="status">Checking session…</p></section>
+</main><footer>GoGo Maps · Global Head Office · Development only</footer>
+<script type="module">
+import {createClient} from "https://esm.sh/@supabase/supabase-js@2";
+const db=createClient("https://adifwwlmdditbdxjwbjn.supabase.co","sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH");
+const $=id=>document.getElementById(id);let locations=[];let currentUser=null;
+const labels={overview:"Overview",customers:"Customers",adverts:"Advertisements",representatives:"Sales Representatives",income:"Income",expenses:"Expenses",commissions:"Commissions",applications:"Applications",office:"Office 🔒"};
+function status(s){$("status").textContent=s}
+function showSignedOut(){currentUser=null;locations=[];$("workspace").classList.add("hidden");$("loginPanel").classList.remove("hidden");$("logout").classList.add("hidden")}
+function option(value,label){return new Option(label,value)}
+function renderFilters(){
+const country=$("country").value,selected=$("branch").value;
+const countries=[...new Set(locations.map(l=>l.country_name))].sort();
+$("country").replaceChildren(option("","All countries"),...countries.map(c=>option(c,c)));
+$("country").value=country&&countries.includes(country)?country:"";
+const filtered=locations.filter(l=>!$("country").value||l.country_name===$("country").value);
+$("branch").replaceChildren(option("","All authorised branches"),...filtered.map(l=>option(l.location_code,l.location_name+" ("+l.location_code+")")));
+$("branch").value=filtered.some(l=>l.location_code===selected)?selected:"";
+renderScope();
+}
+function renderScope(){const code=$("branch").value;const branch=locations.find(l=>l.location_code===code);$("scope").textContent=branch?branch.country_name+" → "+branch.location_name+" ("+branch.currency_code+")":$("country").value||"All authorised countries";$("branchCount").textContent=String(locations.filter(l=>(!$("country").value||l.country_name===$("country").value)&&(!code||l.location_code===code)).length)}
+$("country").addEventListener("change",()=>{const c=$("country").value;$("branch").replaceChildren(option("","All authorised branches"),...locations.filter(l=>!c||l.country_name===c).map(l=>option(l.location_code,l.location_name+" ("+l.location_code+")")));renderScope()});
+$("branch").addEventListener("change",renderScope);
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(!b)return;for(const x of $("tabs").querySelectorAll("button"))x.classList.toggle("active",x===b);$("sectionTitle").textContent=labels[b.dataset.tab];$("overviewCards").classList.toggle("hidden",b.dataset.tab!=="overview");$("panelText").textContent=b.dataset.tab==="office"?"Office access will require separate server-side verification; this preview does not unlock restricted records.":"This section is a development placeholder. Branch-scoped records and reports will be connected only after secure database policies and testing.";});
+async function enter(user){
+if(!user){showSignedOut();status("Please sign in.");return}
+const {data:memberships,error:mError}=await db.from("gogo_management_memberships").select("role,active").eq("user_id",user.id).eq("active",true).in("role",["global_owner","global_admin"]);
+if(mError)throw mError;
+if(!memberships?.length){showSignedOut();status("This account has not yet been appointed as Global Owner or Global Admin. No access granted.");return}
+const {data,error}=await db.from("gogo_locations").select("location_code,location_name,country_name,currency_code,active").order("country_name").order("location_name");
+if(error)throw error;locations=data||[];currentUser=user;
+$("loginPanel").classList.add("hidden");$("workspace").classList.remove("hidden");$("logout").classList.remove("hidden");
+renderFilters();status("Signed in as "+(user.email||"authorised user")+". Read-only global development preview.");
+}
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();status("Signing in…");const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});$("password").value="";if(error){status(error.message);return}try{await enter(data.user)}catch(ex){showSignedOut();status(ex.message)}});
+$("logout").addEventListener("click",async()=>{await db.auth.signOut();showSignedOut();status("Signed out.")});
+try{const {data}=await db.auth.getUser();await enter(data.user)}catch(ex){showSignedOut();status("Unable to load authorised branch access: "+ex.message)}
+</script></body></html>
