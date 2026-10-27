@@ -1103,6 +1103,7 @@ function printCommissionHistory() {
   printWindow.focus();
   printWindow.print();
 }
+  window.printCommissionHistory = printCommissionHistory;
 async function loadCommissionPaymentHistory() {
   const history = $("commissionPaymentHistory");
 
