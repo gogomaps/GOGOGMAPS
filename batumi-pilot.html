@@ -486,7 +486,7 @@ function openDetail(id) {
   );
 if (place.photo_url) {
   const photo = document.createElement("img");
-  photo.src = place.photo_url;
+  photo.src = safeUrl(place.photo_url);
   photo.alt = "Business photo";
   photo.style.cssText = "width:100%;max-height:250px;object-fit:cover;border-radius:10px;margin:10px 0;";
   detail.appendChild(photo);
@@ -624,7 +624,7 @@ if (photoUrls.length > 0) {
   const spotlight=$("spotlight");spotlight.replaceChildren(detail.cloneNode(true));const directions=document.createElement("a");if(Number.isFinite(place.lat)&&Number.isFinite(place.lon)){directions.className="directions-link";directions.textContent="Get directions ↗";directions.href="https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(place.lat+","+place.lon);directions.target="_blank";directions.rel="noopener noreferrer";spotlight.appendChild(directions)}if(matchMedia("(max-width:850px)").matches)$("detailModal").classList.add("open");
 }
 
-function isActivePromotion(p){if(!p)return false;const today=new Date().toISOString().slice(0,10);return (!p.start_date||String(p.start_date).slice(0,10)<=today)&&(!p.end_date||String(p.end_date).slice(0,10)>=today)}
+function isActivePromotion(p){if(!p)return false;const today=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tbilisi",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());return (!p.start_date||String(p.start_date).slice(0,10)<=today)&&(!p.end_date||String(p.end_date).slice(0,10)>=today)}
 function render() {
   layer.clearLayers();
   $("results").replaceChildren();
@@ -659,7 +659,7 @@ found.sort((a, b) => Number(isActivePromotion(b.promotion)) - Number(isActivePro
     
     const heading = addText(item, "h3", place.name);
 heading.style.color = isActivePromotion(place.promotion) ? "#d62828" : "#1769aa";
-    if (place.promotion) {
+    if (isActivePromotion(place.promotion)) {
       const badge = document.createElement("span");
       badge.className = "pill";
       badge.textContent = " SPECIAL";
@@ -673,7 +673,7 @@ heading.style.color = isActivePromotion(place.promotion) ? "#d62828" : "#1769aa"
     );
     category.className = "muted";
 
-    if (place.promotion) {
+    if (isActivePromotion(place.promotion)) {
       const offer = addText(
         item, "strong",
         place.promotion.offer_title
