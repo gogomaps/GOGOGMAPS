@@ -28,8 +28,8 @@ footer{padding:10px 20px 35px;text-align:center;color:#617286}
 <button class="active" data-tab="overview">Overview</button><button data-tab="customers">Customers</button><button data-tab="adverts">Advertisements</button><button data-tab="representatives">Representatives</button><button data-tab="income">Income</button><button data-tab="expenses">Expenses</button><button data-tab="commissions">Commissions</button><button data-tab="applications">Applications</button><button data-tab="office">Office 🔒</button>
 </nav></section>
 <section><h2 id="sectionTitle">Overview</h2><div class="grid" id="overviewCards">
-<div class="kpi">Configured branches<strong id="branchCount">—</strong></div><div class="kpi">Customers<strong>Not connected</strong></div><div class="kpi">Advertising income<strong>Not connected</strong></div><div class="kpi">Expenses<strong>Not connected</strong></div></div>
-<p id="panelText" class="notice">This is a secure development shell, not a live financial report. Customer, advertising, payment and expense records will only be connected after branch-level data permissions are implemented and tested.</p></section>
+<div class="kpi">Configured branches<strong id="branchCount">—</strong></div><div class="kpi">Customers<strong id="customerCount">—</strong></div><div class="kpi">Advertising income<strong>Not connected</strong></div><div class="kpi">Expenses<strong>Not connected</strong></div></div>
+<div id="customerRows" class="hidden" aria-live="polite"></div><p id="panelText" class="notice">This is a secure development shell, not a live financial report. Customer, advertising, payment and expense records will only be connected after branch-level data permissions are implemented and tested.</p></section>
 </div>
 <section><p id="status" role="status">Checking session…</p></section>
 </main><footer>GoGo Maps · Global Head Office · Development only</footer>
