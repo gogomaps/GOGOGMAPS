@@ -315,6 +315,7 @@ body{background:#edf4fb;font-family:system-ui,Segoe UI,sans-serif}header{min-hei
   <button id="specialBtn" data-translate="specialOffers">
   🔴 Special Offers
 </button>
+ <select id="categoryFilter" aria-label="Filter by business category" style="border:0;border-radius:12px;padding:12px;background:white;color:#0b345c;font-weight:750;min-width:160px"><option value="">All categories</option></select>
  <button id="nearBtn" class="secondary" data-translate="findMe">
   Find me
 </button>
@@ -630,9 +631,11 @@ function render() {
   $("results").replaceChildren();
 
   const query = $("search").value.trim().toLowerCase();
+  const categoryChoice=$("categoryFilter").value;
 
   const found = places.filter(p => {
     if (specialsOnly && !isActivePromotion(p.promotion)) return false;
+    if(categoryChoice && p.category!==categoryChoice)return false;
 
     return [
       p.name,
@@ -742,6 +745,7 @@ async function loadBusinesses() {
     });
 
     for(const b of approvedBatumi){places.push({id:b.id,name:b.business_name,category:b.category,address:b.address,phone:b.phone,photo_url:b.photo_url,lat:Number(b.latitude),lon:Number(b.longitude),promotion:null})}
+    const categories=[...new Set(places.map(p=>p.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const categoryFilter=$("categoryFilter");categoryFilter.replaceChildren(new Option("All categories",""));for(const category of categories)categoryFilter.add(new Option(category,category));
     $("status").textContent = places.length ? "Showing "+places.length+" business listings from GoGo Maps." : "No published Batumi businesses yet. Business applications are open.";
 
     render();if(places.length)openDetail(places.find(p=>isActivePromotion(p.promotion))?.id||places[0].id);
@@ -766,6 +770,7 @@ $("search").addEventListener("keydown", event => {
   }
 });
 $("searchBtn").onclick = runSearch;
+$("categoryFilter").addEventListener("change",render);
 $("allBtn").onclick = () => {
   specialsOnly = false;
   render();
