@@ -657,6 +657,7 @@ found.sort((a, b) => Number(isActivePromotion(b.promotion)) - Number(isActivePro
 
 
     
+    if(safeUrl(place.photo_url)){const thumbnail=document.createElement("img");thumbnail.src=safeUrl(place.photo_url);thumbnail.alt="Photo of "+place.name;thumbnail.loading="lazy";thumbnail.style.cssText="width:100%;height:115px;object-fit:cover;border-radius:10px;margin-bottom:8px";item.appendChild(thumbnail)}
     const heading = addText(item, "h3", place.name);
 heading.style.color = isActivePromotion(place.promotion) ? "#d62828" : "#1769aa";
     if (isActivePromotion(place.promotion)) {
