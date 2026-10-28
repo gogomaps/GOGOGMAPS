@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Batumi GO | GoGo Maps</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f6f9;
+  color: #173145;
+}
+
+header {
+  background: #102c40;
+  color: white;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+h1 { margin: 0; font-size: 23px; }
+header small { color: #c6dce9; }
+
+button, .btn {
+  background: #0876b9;
+  color: white;
+  border: none;
+  padding: 11px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+button.secondary {
+  background: #e1edf4;
+  color: #153a50;
+}
+  .languagePicker {
+  display: flex;
+  align-items: center;
+  background: #7030a0;
+  border-radius: 50px;
+  padding: 4px 12px;
+}
+  #languageGlobe {
+  display: flex;
+align-items: center;
+  margin-right: 5px;
+}
+  #languageSelect {
+  background: transparent;
+  color: white;
+  border: none;
+  border-radius: 50px; 
+  padding: 12px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 155px;
+}
+
+#languageSelect option {
+  background: white;
+  color: #222222;
+}
+#allBtn {
+  background: #1769aa;
+  color: white;
+}
+
+#specialBtn {
+  background: #d62828;
+  color: white;
+}
+
+#nearBtn {
+  background: #238b45;
+  color: white;
+}
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.wrap {
+  max-width: 1300px;
+  margin: auto;
+  padding: 14px;
+}
+
+.notice {
+  background: #fff3d2;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.toolbar input {
+  flex: 1;
+  min-width: 170px;
+  padding: 12px;
+  border: 1px solid #bed0dc;
+  border-radius: 8px;
+  font-size: 15px;
+}
+.search-container {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 220px;
+}
+
+.search-container input {
+  width: 100%;
+  padding-right: 45px;
+  box-sizing: border-box;
+}
+
+.search-container button {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 5px;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 330px 1fr;
+  gap: 12px;
+}
+
+.panel {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+#map {
+  height: 70vh;
+  border-radius: 12px;
+}
+
+.item {
+  border-bottom: 1px solid #e4e9ee;
+  padding: 12px 4px;
+  cursor: pointer;
+}
+
+.item h3 {
+  margin: 0 0 5px;
+  font-size: 16px;
+}
+
+.muted {
+  color: #607887;
+  font-size: 13px;
+}
+
+.pill {
+  background: #ffe0df;
+  color: #a32626;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.red { color: #b72b2b; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: #0009;
+  z-index: 2000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+
+.modal.open { display: flex; }
+
+.dialog {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  width: 100%;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.offer {
+  background: #fff5f3;
+  border: 1px solid #f0c7c3;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+
+.promo-media {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.media-cell {
+  border: 1px solid #dce6ed;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  min-width: 0;
+}
+
+.media-cell img,
+.media-cell video {
+  width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+}
+
+.media-cell h4 {
+  font-size: 12px;
+}
+
+.pin {
+  width: 26px;
+  height: 36px;
+  filter: drop-shadow(0 2px 2px #555);
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #687b88;
+}
+
+@media(max-width: 760px) {
+  .layout { grid-template-columns: 1fr; }
+  #map { height: 48vh; }
+  .panel { max-height: 38vh; }
+}
+body{background:#edf4fb;font-family:system-ui,Segoe UI,sans-serif}header{min-height:225px;align-items:flex-start;padding:30px 4vw;background:radial-gradient(ellipse at 85% 95%,#ffab7d99,transparent 40%),linear-gradient(115deg,#072c61,#117cbd 70%,#ff9b7c)}.pilot-brand{display:flex;align-items:center;gap:18px}.pilot-brand img{width:100px;height:100px;object-fit:contain}.pilot-brand h1{font-size:clamp(28px,4vw,50px);letter-spacing:-.04em}.pilot-brand small{color:#fff}.office-link{color:white;text-decoration:none;font-weight:800;padding:12px;background:#0a2b56;border-radius:12px}.languagePicker{background:#fff}.languagePicker #languageSelect{color:#092c5c}.languagePicker svg{stroke:#092c5c}.wrap{max-width:1800px;margin:-17px auto 0;position:relative}.notice{font-size:12px;background:#fff7dd}.toolbar{padding:12px;background:#072c58;border-radius:16px;box-shadow:0 8px 25px #072c5840}.toolbar button{min-height:48px;border-radius:12px;font-weight:800}.search-container input{min-height:48px;border:0;border-radius:12px}#allBtn{background:linear-gradient(#17a7ff,#0063ed);color:white}#specialBtn{background:linear-gradient(#ff5258,#e5002a)}#nearBtn{background:linear-gradient(#1de070,#00a644);color:white}.layout{grid-template-columns:minmax(250px,29%) minmax(330px,1fr) minmax(270px,28%);gap:10px}.panel,#map,.featured{height:70vh;min-height:510px;border-radius:15px;box-shadow:0 6px 25px #123a6622}.panel{max-height:none}.featured{background:white;padding:18px;overflow:auto}.featured-label{font-weight:900;color:#1375b8;letter-spacing:.12em;font-size:12px;border-bottom:1px solid #e0eaf4;padding-bottom:12px}.featured img{width:100%;border-radius:12px}.featured p{line-height:1.5}.directions-link{display:inline-block;padding:12px 15px;background:#0679ed;color:white;text-decoration:none;border-radius:10px;margin-top:14px}.item:hover{background:#edf6ff}.pill{background:#e91d3b;color:white}@media(max-width:1100px){.layout{grid-template-columns:minmax(260px,38%) 1fr}.featured{grid-column:1/-1;height:auto;min-height:150px;max-height:400px}}@media(max-width:850px){header{min-height:180px;padding:18px}.pilot-brand img{width:70px;height:70px}.pilot-brand h1{font-size:26px}.layout{grid-template-columns:1fr}.panel{height:auto;min-height:140px;max-height:300px}#map{height:55vh;min-height:350px}.featured{display:none}.search-container{flex-basis:100%}.wrap{margin:-7px auto 0}}</style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <div class="pilot-brand"><img src="/logo.png" alt="GoGo Maps logo"><div><h1>GoGo Maps — Batumi</h1><small>Discover local businesses and special offers</small></div></div>
+    <small id="headerSubtitle">Discover local businesses and exclusive specials</small>
+  </div>
+ <div class="languagePicker">
+<span id="languageGlobe" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+<select id="languageSelect" aria-label="Choose language">
+<option value="en">English</option>
+ <option value="ka">ქართული</option>
+</select>
+   </div>
+  <a class="office-link" href="/global-private-business-manager-dev.html">Head Office ↗</a><button id="privateOfficeBtn" class="secondary" hidden disabled>
+  🔒 Private office — coming soon
+</button>
+</header>
+
+<main class="wrap">
+
+<div class="notice" id="versionNotice">
+  Batumi pilot · Business listings and promotions come from the GoGo Maps database.
+</div>
+
+<div class="toolbar">
+  <div class="search-container">
+  <input id="search" type="search" autocomplete="off" spellcheck="false"
+  aria-label="Search business listings"
+  data-translate-placeholder="searchPlaceholder"
+  placeholder="Search businesses and promotions in English">
+
+  <button id="searchBtn" type="button" aria-label="Search businesses">
+    🔍
+  </button>
+</div>
+  
+  
+  
+  
+  
+ <button id="allBtn" class="secondary" data-translate="allBusinesses">
+  All businesses
+</button>
+  <button id="specialBtn" data-translate="specialOffers">
+  🔴 Special Offers
+</button>
+ <button id="nearBtn" class="secondary" data-translate="findMe">
+  Find me
+</button>
+</div>
+
+<div class="layout">
+  <div class="panel">
+<p id="status" data-translate="connecting">Connecting to database...</p>
+    <b id="count"></b>
+    <div id="results"></div>
+  </div>
+
+  <div id="map"></div><aside class="featured"><div class="featured-label">BUSINESS SPOTLIGHT</div><div id="spotlight"><h2>Explore Batumi</h2><p>Select a business or map marker to view its information and offers.</p></div></aside>
+</div>
+
+</main>
+
+<footer id="footerText">
+  Batumi GO · Map © OpenStreetMap contributors
+</footer>
+
+<div id="detailModal" class="modal">
+  <div class="dialog">
+    <button class="secondary" id="closeBtn"
+      style="float:right">✕</button>
+    <div id="detail"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const supabaseUrl =
+  "https://adifwwlmdditbdxjwbjn.supabase.co";
+
+const supabaseKey =
+  "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH";
+
+const $ = id => document.getElementById(id);
+
+let places = [];
+let specialsOnly = false;
+  const translations = {
+    en: {
+      headerSubtitle: "Discover local businesses and exclusive specials",
+      languageLabel: "🌐 Select Language:",
+       privateOffice: "🔒 Private office — coming soon",
+    versionNotice: "VERSION 9 TEST — Connected to the GoGo Maps online database. Staff management is not yet enabled.",
+    searchPlaceholder: "Search businesses and promotions in English",
+    allBusinesses: "All businesses",
+    specialOffers: "🔴 Special Offers",
+    findMe: "Find me",
+    connecting: "Connecting to database...",
+    footer: "GoGo Maps Version 9 Test · Map © OpenStreetMap contributors"
+  },
+
+  ka: {
+ headerSubtitle: "აღმოაჩინეთ ადგილობრივი ბიზნესები და სპეციალური შეთავაზებები",
+    languageLabel: "🌐 აირჩიეთ ენა:",
+    privateOffice: "🔒 პირადი ოფისი — მალე",
+    versionNotice: "ვერსია 9 ტესტი — დაკავშირებულია GoGo Maps-ის ონლაინ მონაცემთა ბაზასთან. თანამშრომლების მართვა ჯერ არ არის ჩართული.",
+    searchPlaceholder: "მოძებნეთ ბიზნესები და შეთავაზებები",
+    allBusinesses: "ყველა ბიზნესი",
+    specialOffers: "🔴 სპეციალური შეთავაზებები",
+    findMe: "ჩემი მდებარეობა",
+    connecting: "მონაცემთა ბაზასთან დაკავშირება...",
+    footer: "GoGo Maps ვერსია 9 ტესტი · რუკა © OpenStreetMap-ის მონაწილეები"
+  }
+};
+    let currentLanguage = localStorage.getItem("gogoLanguage") || "en";
+$("languageSelect").value = currentLanguage;
+$("languageSelect").addEventListener("change", function () {
+  currentLanguage = this.value;
+  localStorage.setItem("gogoLanguage", currentLanguage);
+  applyTranslations();
+});
+  function applyTranslations() {
+  const t = translations[currentLanguage] || translations.en;
+
+  $("headerSubtitle").textContent = t.headerSubtitle;
+  $("privateOfficeBtn").textContent = t.privateOffice;
+  $("versionNotice").textContent = t.versionNotice;
+
+  $("search").placeholder = t.searchPlaceholder;
+
+  $("allBtn").textContent = t.allBusinesses;
+  $("specialBtn").textContent = t.specialOffers;
+  $("nearBtn").textContent = t.findMe;
+
+  $("footerText").textContent = t.footer;
+}
+  applyTranslations();
+const map = L.map("map").setView(
+  [41.6168, 41.6367], 13
+);
+
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap contributors"
+  }
+).addTo(map);
+
+const layer = L.layerGroup().addTo(map);
+
+function makePin(color) {
+  return L.divIcon({
+    className: "",
+    html: `
+      <svg class="pin" viewBox="0 0 26 36"
+        xmlns="http://www.w3.org/2000/svg">
+        <path d="M13 1 C6 1 1 6 1 13
+          C1 22 13 35 13 35
+          C13 35 25 22 25 13
+          C25 6 20 1 13 1 Z"
+          fill="${color}"
+          stroke="white" stroke-width="2"/>
+        <circle cx="13" cy="13" r="5" fill="white"/>
+      </svg>`,
+    iconSize: [26, 36],
+    iconAnchor: [13, 35]
+  });
+}
+
+const bluePin = makePin("#1677ff");
+const redPin = makePin("#e32636");
+
+async function getData(table) {
+  const response = await fetch(
+    supabaseUrl + "/rest/v1/" + table + "?select=*",
+    { headers: { apikey: supabaseKey } }
+  );
+
+  if (!response.ok) {
+    throw new Error(table + ": HTTP " + response.status);
+  }
+
+  return response.json();
+}
+
+function safeUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function addText(parent, tag, value) {
+  const element = document.createElement(tag);
+  element.textContent = value || "";
+  parent.appendChild(element);
+  return element;
+}
+
+function openDetail(id) {
+  const place = places.find(p => p.id === id);
+  if (!place) return;
+
+  const detail = $("detail");
+  detail.replaceChildren();
+
+  addText(detail, "h2", place.name);
+  addText(detail, "p",
+    (place.category || "Business") + " · " +
+    (place.address || "Batumi")
+  );
+if (place.photo_url) {
+  const photo = document.createElement("img");
+  photo.src = place.photo_url;
+  photo.alt = "Business photo";
+  photo.style.cssText = "width:100%;max-height:250px;object-fit:cover;border-radius:10px;margin:10px 0;";
+  detail.appendChild(photo);
+}
+  if (place.phone) {
+    addText(detail, "p", "☎ " + place.phone);
+  }
+
+  if (place.promotion) {
+    const offer = document.createElement("div");
+    offer.className = "offer";
+
+    addText(offer, "h2",
+      "🔴 " + place.promotion.offer_title);
+
+    addText(offer, "p",
+      place.promotion.offer_description);
+
+    addText(offer, "p",
+      "Valid: " + place.promotion.start_date +
+      " to " + place.promotion.end_date);
+
+    detail.appendChild(offer);
+
+    const media = document.createElement("div");
+    media.className = "promo-media";
+
+    const logoCell = document.createElement("div");
+    logoCell.className = "media-cell";
+    addText(logoCell, "h4", "Business logo");
+    addText(logoCell, "p", "Coming soon");
+
+    const videoCell = document.createElement("div");
+    videoCell.className = "media-cell";
+    addText(videoCell, "h4", "Promotional video");
+
+    const videoUrl = safeUrl(
+      place.promotion.promotional_video_url
+    );
+
+    if (videoUrl) {
+      const link = document.createElement("a");
+      link.href = videoUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Watch video";
+      videoCell.appendChild(link);
+    } else {
+      addText(videoCell, "p", "Coming soon");
+    }
+
+    const qrCell = document.createElement("div");
+    qrCell.className = "media-cell";
+    addText(qrCell, "h4", "Show QR in store");
+    addText(qrCell, "p", "Coming soon");
+
+    media.append(logoCell, videoCell, qrCell);
+    detail.appendChild(media);
+
+    const photoUrls = (
+  Array.isArray(place.promotion.promotional_photo_urls)
+    ? place.promotion.promotional_photo_urls
+    : []
+).map(safeUrl).filter(Boolean);
+
+if (photoUrls.length === 0) {
+  const oldPhoto = safeUrl(place.promotion.promotional_photo_url);
+  if (oldPhoto) photoUrls.push(oldPhoto);
+}
+
+if (photoUrls.length > 0) {
+  const gallery = document.createElement("div");
+  gallery.style.cssText = "margin-top:12px;width:100%;";
+
+  const mainPhoto = document.createElement("img");
+  let currentPhoto = 0;
+
+  mainPhoto.src = photoUrls[0];
+  mainPhoto.alt = "Promotional photograph";
+  mainPhoto.style.cssText =
+    "width:100%;height:240px;object-fit:contain;border-radius:10px;background:#f3f3f3;";
+
+  const thumbnails = document.createElement("div");
+  thumbnails.style.cssText =
+    "display:flex;gap:6px;overflow-x:auto;margin-top:8px;";
+
+  function showPhoto(index) {
+    currentPhoto = index;
+    mainPhoto.src = photoUrls[index];
+
+    Array.from(thumbnails.children).forEach((thumb, i) => {
+      thumb.style.border = i === index
+        ? "3px solid #1769aa"
+        : "2px solid transparent";
+    });
+  }
+
+  photoUrls.slice(0, 5).forEach((url, index) => {
+    const thumb = document.createElement("img");
+    thumb.src = url;
+    thumb.alt = "Photo " + (index + 1);
+    thumb.style.cssText =
+      "width:58px;height:58px;object-fit:cover;border-radius:6px;cursor:pointer;flex-shrink:0;";
+
+    thumb.addEventListener("click", () => showPhoto(index));
+    thumbnails.appendChild(thumb);
+  });
+
+  let touchStartX = 0;
+
+  mainPhoto.addEventListener("touchstart", event => {
+    touchStartX = event.changedTouches[0].screenX;
+  }, { passive: true });
+
+  mainPhoto.addEventListener("touchend", event => {
+    const difference =
+      event.changedTouches[0].screenX - touchStartX;
+
+    if (Math.abs(difference) > 40) {
+      const next = difference < 0
+        ? (currentPhoto + 1) % thumbnails.children.length
+        : (currentPhoto - 1 + thumbnails.children.length)
+          % thumbnails.children.length;
+
+      showPhoto(next);
+    }
+  });
+
+  gallery.append(mainPhoto, thumbnails);
+  detail.appendChild(gallery);
+  showPhoto(0);
+}
+  }
+
+  const spotlight=$("spotlight");spotlight.replaceChildren(detail.cloneNode(true));const directions=document.createElement("a");if(Number.isFinite(place.lat)&&Number.isFinite(place.lon)){directions.className="directions-link";directions.textContent="Get directions ↗";directions.href="https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(place.lat+","+place.lon);directions.target="_blank";directions.rel="noopener noreferrer";spotlight.appendChild(directions)}if(matchMedia("(max-width:850px)").matches)$("detailModal").classList.add("open");
+}
+
+function render() {
+  layer.clearLayers();
+  $("results").replaceChildren();
+
+  const query = $("search").value.trim().toLowerCase();
+
+  const found = places.filter(p => {
+    if (specialsOnly && !p.promotion) return false;
+
+    return [
+      p.name,
+      p.category,
+      p.address,
+      p.promotion?.offer_title,
+      p.promotion?.offer_description
+    ].some(value =>
+      String(value || "").normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim().includes(query)
+    );
+  });
+
+  $("count").textContent =
+    found.length + " listings · " +
+    found.filter(p => p.promotion).length +
+    " active specials";
+found.sort((a, b) => Number(Boolean(b.promotion)) - Number(Boolean(a.promotion)));
+  found.forEach(place => {
+    const item = document.createElement("div");
+    item.className = "item";
+
+
+
+    
+    const heading = addText(item, "h3", place.name);
+heading.style.color = place.promotion ? "#d62828" : "#1769aa";
+    if (place.promotion) {
+      const badge = document.createElement("span");
+      badge.className = "pill";
+      badge.textContent = " SPECIAL";
+      heading.appendChild(badge);
+    }
+
+    const category = addText(
+      item, "p",
+      (place.category || "Business") +
+      " · " + (place.address || "Batumi")
+    );
+    category.className = "muted";
+
+    if (place.promotion) {
+      const offer = addText(
+        item, "strong",
+        place.promotion.offer_title
+      );
+      offer.className = "red";
+    }
+
+    item.onclick = () => {
+      if (
+        Number.isFinite(place.lat) &&
+        Number.isFinite(place.lon)
+      ) {
+        map.setView([place.lat, place.lon], 16);
+      }
+      openDetail(place.id);
+    };
+
+    $("results").appendChild(item);
+
+    if (
+      !Number.isFinite(place.lat) ||
+      !Number.isFinite(place.lon)
+    ) return;
+
+    L.marker(
+      [place.lat, place.lon],
+      { icon: place.promotion ? redPin : bluePin }
+    )
+    .addTo(layer)
+    .on("click", () => openDetail(place.id));
+  });
+}
+
+async function loadBusinesses() {
+  try {
+    const businesses = await getData("businesses");
+    const promotions = await getData("promotions");
+
+    places = businesses.map(business => {
+      const matchingPromotions = promotions
+        .filter(p => p.business_id === business.id)
+        .sort((a, b) =>
+          String(b.start_date).localeCompare(
+            String(a.start_date)
+          )
+        );
+
+      return {
+        id: business.id,
+        name: business.name,
+        category: business.category,
+        address: business.address,
+        phone: business.phone,
+        photo_url: business.photo_url,
+        lat: business.latitude == null
+          ? null : Number(business.latitude),
+        lon: business.longitude == null
+          ? null : Number(business.longitude),
+        promotion: matchingPromotions[0] || null
+      };
+    });
+
+    $("status").textContent =
+      "Connected successfully to GoGo Maps database.";
+
+    render();if(places.length)openDetail(places[0].id);
+  } catch (error) {
+    $("status").textContent =
+      "Database connection failed: " + error.message;
+  }
+}
+
+// Filter on typing, Enter, and clicking the search icon.
+function runSearch() {
+  specialsOnly = false;
+  render();
+}
+$("search").addEventListener("input", runSearch);
+$("search").addEventListener("search", runSearch);
+$("search").addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    runSearch();
+    $("search").blur();
+  }
+});
+$("searchBtn").onclick = runSearch;
+$("allBtn").onclick = () => {
+  specialsOnly = false;
+  render();
+};
+
+$("specialBtn").onclick = () => {
+  specialsOnly = true;
+  render();
+};
+
+$("nearBtn").onclick = () => {
+  if (!navigator.geolocation) {
+    alert("Location is not available.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      map.setView([
+        position.coords.latitude,
+        position.coords.longitude
+      ], 17);
+      if (window.myLocationDot) map.removeLayer(window.myLocationDot);
+      window.myLocationDot =
+      L.circleMarker(
+  [position.coords.latitude, position.coords.longitude],
+  {
+    radius: 9,
+    color: "#ffffff",
+    weight: 3,
+    fillColor: "#1685ff",
+    fillOpacity: 1
+  }
+).addTo(map).bindPopup("You are here");
+    },
+    () => alert("Location permission unavailable.")
+  );
+};
+
+$("closeBtn").onclick = () => {
+  $("detailModal").classList.remove("open");
+};
+
+loadBusinesses();
+</script>
+</body>
+</html>
