@@ -51,6 +51,21 @@ $("branch").replaceChildren(option("","All authorised branches"),...filtered.map
 $("branch").value=filtered.some(l=>l.location_code===selected)?selected:"";
 renderScope();
 }
+async function loadCustomers(){
+ if(!currentUser)return;
+ const code=$("branch").value;
+ let query=db.from("gogo_branch_customers").select("location_code,customer_code,business_name,created_at").order("created_at",{ascending:false}).limit(200);
+ if(code)query=query.eq("location_code",code);
+ const {data,error}=await query;
+ if(error){$("customerCount").textContent="Unavailable";status("Customer directory unavailable: "+error.message);return}
+ const country=$("country").value;
+ const allowed=new Set(locations.filter(l=>!country||l.country_name===country).map(l=>l.location_code));
+ const rows=(data||[]).filter(x=>allowed.has(x.location_code));
+ $("customerCount").textContent=String(rows.length)+(data?.length===200?"+":"");
+ const target=$("customerRows");target.replaceChildren();
+ if(!rows.length)target.textContent="No registered customers in this selection.";
+ for(const c of rows){const p=document.createElement("p");p.textContent=c.location_code+" · "+(c.customer_code||"—")+" · "+(c.business_name||"Unnamed business");target.append(p)}
+}
 function renderScope(){const code=$("branch").value;const branch=locations.find(l=>l.location_code===code);$("scope").textContent=branch?branch.country_name+" → "+branch.location_name+" ("+branch.currency_code+")":$("country").value||"All authorised countries";$("branchCount").textContent=String(locations.filter(l=>(!$("country").value||l.country_name===$("country").value)&&(!code||l.location_code===code)).length)}
 $("country").addEventListener("change",()=>{const c=$("country").value;$("branch").replaceChildren(option("","All authorised branches"),...locations.filter(l=>!c||l.country_name===c).map(l=>option(l.location_code,l.location_name+" ("+l.location_code+")")));renderScope()});
 $("branch").addEventListener("change",renderScope);
