@@ -649,6 +649,7 @@ function render() {
     found.length + " listings · " +
     found.filter(p => isActivePromotion(p.promotion)).length +
     " active specials";
+if(!found.length){const empty=document.createElement("div");empty.style.cssText="padding:20px;line-height:1.6;color:#36516e";const title=document.createElement("strong");title.textContent=specialsOnly?"No active special offers are available right now.":query?"No businesses match your search.":"Batumi businesses are being added.";const note=document.createElement("p");note.textContent=specialsOnly?"Try All Businesses to see the complete directory.":query?"Try another business name or category.":"Own a local business? Apply to be included in the directory.";empty.append(title,note);if(!query&&!specialsOnly){const a=document.createElement("a");a.href="/batumi-register.html";a.textContent="Apply to list your business →";a.style.cssText="color:#086fcb;font-weight:800";empty.append(a)}$("results").append(empty)}
 found.sort((a, b) => Number(isActivePromotion(b.promotion)) - Number(isActivePromotion(a.promotion)));
   found.forEach(place => {
     const item = document.createElement("div");
