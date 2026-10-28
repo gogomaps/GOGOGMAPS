@@ -709,9 +709,11 @@ heading.style.color = isActivePromotion(place.promotion) ? "#d62828" : "#1769aa"
 
 async function loadBusinesses() {
   try {
-    const businesses = await getData("businesses");
-    const promotions = await getData("promotions");
-    const approvedBatumi = await getData("gogo_batumi_published");
+    const [businessesResult,promotionsResult,publishedResult] = await Promise.allSettled([getData("businesses"),getData("promotions"),getData("gogo_batumi_published")]);
+    const businesses=businessesResult.status==="fulfilled"?businessesResult.value:[];
+    const promotions=promotionsResult.status==="fulfilled"?promotionsResult.value:[];
+    const approvedBatumi=publishedResult.status==="fulfilled"?publishedResult.value:[];
+    if(publishedResult.status==="rejected")throw publishedResult.reason;
 
     places = businesses.map(business => {
       const matchingPromotions = promotions
@@ -738,8 +740,7 @@ async function loadBusinesses() {
     });
 
     for(const b of approvedBatumi){places.push({id:b.id,name:b.business_name,category:b.category,address:b.address,phone:b.phone,photo_url:b.photo_url,lat:Number(b.latitude),lon:Number(b.longitude),promotion:null})}
-    $("status").textContent =
-      "Connected successfully to GoGo Maps database.";
+    $("status").textContent = places.length ? "Showing "+places.length+" business listings from GoGo Maps." : "No published Batumi businesses yet. Business applications are open.";
 
     render();if(places.length)openDetail(places.find(p=>isActivePromotion(p.promotion))?.id||places[0].id);
   } catch (error) {
