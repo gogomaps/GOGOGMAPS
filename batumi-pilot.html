@@ -712,7 +712,7 @@ heading.style.color = isActivePromotion(place.promotion) ? "#d62828" : "#1769aa"
   });
 }
 
-async function loadBusinesses() {
+async async function loadBusinesses() {
   try {
     const [businessesResult,promotionsResult,publishedResult] = await Promise.allSettled([getData("businesses"),getData("promotions"),getData("gogo_batumi_published")]);
     const businesses=businessesResult.status==="fulfilled"?businessesResult.value:[];
