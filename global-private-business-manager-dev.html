@@ -14,10 +14,10 @@ button:disabled{opacity:.55;cursor:not-allowed}.secondary{background:#3b526b}.hi
 .muted{color:#56697d}.notice{padding:14px;background:#fff7e6;border-left:4px solid #e0a328;border-radius:5px}
 #status{min-height:24px}nav{display:flex;flex-wrap:wrap;gap:8px}nav button{background:#dfeaf5;color:#13436e}nav button.active{background:#1769aa;color:white}
 footer{padding:10px 20px 35px;text-align:center;color:#617286}
-</style></head><body>
-<header><div><h1>GoGo Maps — Private Business Manager</h1><small>GLOBAL HEAD OFFICE · DEVELOPMENT PREVIEW</small></div><button id="logout" class="secondary hidden">Sign Out</button></header>
-<main>
-<section id="loginPanel"><h2>Authorised sign-in</h2><p class="muted">Use your existing GoGo Maps login. Global access requires an approved Global Owner or Global Admin appointment.</p>
+.portalBrand{display:flex;align-items:center;gap:16px;background:white;border-radius:15px;padding:20px 24px;margin-bottom:20px;box-shadow:0 6px 24px #10335414}.portalBrand img{width:65px;height:65px;object-fit:contain}.portalBrand strong{display:block;font-size:24px;color:#0b477e}.portalBrand span{color:#63758a;font-size:14px}header{background:linear-gradient(110deg,#092b54,#147ab5)}section{border:1px solid #e1eaf3;box-shadow:0 8px 30px #10335410}button{transition:filter .2s}button:hover{filter:brightness(1.08)}nav button{border-radius:9px}#sessionPanel button{margin:6px 6px 6px 0}#loginPanel.hidden,#sessionPanel.hidden{display:none}body{background:#f2f6fb}</style></head><body>
+<header><div><h1>GoGo Maps — Private Business Manager</h1><small>GLOBAL HEAD OFFICE · MANAGEMENT PORTAL</small></div><button id="logout" class="secondary hidden">Sign Out</button></header>
+<main><div class="portalBrand"><img src="/logo.png" alt="GoGo Maps logo"><div><strong>Head Office</strong><span>Global management workspace</span></div></div>
+<section id="sessionPanel" class="hidden"><h2>Welcome back</h2><p id="sessionInfo" class="muted">Your previous sign-in is still active.</p><button id="continueSession" type="button">Enter Head Office dashboard</button> <button id="switchAccount" type="button" class="secondary">Sign in with another account</button></section><section id="loginPanel" class="hidden"><h2>Authorised sign-in</h2><p class="muted">Use your existing GoGo Maps login. Global access requires an approved Global Owner or Global Admin appointment.</p>
 <form id="loginForm" class="grid"><div><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div><div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div style="align-self:end"><button type="submit">Sign In</button></div></form><p><a href="/reset-password.html" style="color:#1769aa;font-weight:bold">Forgot password? Request a six-digit recovery code</a></p></section>
 <div id="workspace" class="hidden">
 <section><h2>Global overview</h2><div class="grid">
@@ -39,7 +39,7 @@ const db=createClient("https://adifwwlmdditbdxjwbjn.supabase.co","sb_publishable
 const $=id=>document.getElementById(id);let locations=[];let currentUser=null;
 const labels={overview:"Overview",customers:"Customers",adverts:"Advertisements",representatives:"Sales Representatives",income:"Income",expenses:"Expenses",commissions:"Commissions",applications:"Applications",office:"Office 🔒"};
 function status(s){$("status").textContent=s}
-function showSignedOut(){currentUser=null;locations=[];$("workspace").classList.add("hidden");$("loginPanel").classList.remove("hidden");$("logout").classList.add("hidden")}
+function showSignedOut(){currentUser=null;locations=[];$("sessionPanel").classList.add("hidden");$("workspace").classList.add("hidden");$("loginPanel").classList.remove("hidden");$("logout").classList.add("hidden")}
 function option(value,label){return new Option(label,value)}
 function renderFilters(){
 const country=$("country").value,selected=$("branch").value;
@@ -77,10 +77,10 @@ if(mError)throw mError;
 if(!memberships?.length){showSignedOut();status("This account has not yet been appointed as Global Owner or Global Admin. No access granted.");return}
 const {data,error}=await db.from("gogo_locations").select("location_code,location_name,country_name,currency_code,active").order("country_name").order("location_name");
 if(error)throw error;locations=data||[];currentUser=user;
-$("loginPanel").classList.add("hidden");$("workspace").classList.remove("hidden");$("logout").classList.remove("hidden");
+$("loginPanel").classList.add("hidden");$("sessionPanel").classList.add("hidden");$("workspace").classList.remove("hidden");$("logout").classList.remove("hidden");
 renderFilters();await loadCustomers();status("Signed in as "+(user.email||"authorised user")+". Read-only global development preview.");
 }
 $("loginForm").addEventListener("submit",async e=>{e.preventDefault();status("Signing in…");const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});$("password").value="";if(error){status(error.message);return}try{await enter(data.user)}catch(ex){showSignedOut();status(ex.message)}});
 $("logout").addEventListener("click",async()=>{await db.auth.signOut();showSignedOut();status("Signed out.")});
-try{const {data}=await db.auth.getUser();await enter(data.user)}catch(ex){showSignedOut();status("Unable to load authorised branch access: "+ex.message)}
+$("continueSession").addEventListener("click",async()=>{try{status("Checking access…");const {data,error}=await db.auth.getUser();if(error)throw error;await enter(data.user)}catch(ex){showSignedOut();status("Unable to verify Head Office access: "+ex.message)}});$("switchAccount").addEventListener("click",async()=>{await db.auth.signOut();showSignedOut();status("Sign in with your chosen account.")});try{const {data,error}=await db.auth.getUser();if(!error&&data.user){$("sessionInfo").textContent="Signed in as "+(data.user.email||"an existing account")+". Choose when to enter your dashboard.";$("sessionPanel").classList.remove("hidden");status("Your session is active. Select Enter Head Office dashboard to continue.")}else{showSignedOut();status("Please sign in.")}}catch(ex){showSignedOut();status("Please sign in.")}
 </script></body></html>
