@@ -69,7 +69,7 @@ async function loadCustomers(){
 function renderScope(){const code=$("branch").value;const branch=locations.find(l=>l.location_code===code);$("scope").textContent=branch?branch.country_name+" → "+branch.location_name+" ("+branch.currency_code+")":$("country").value||"All authorised countries";$("branchCount").textContent=String(locations.filter(l=>(!$("country").value||l.country_name===$("country").value)&&(!code||l.location_code===code)).length)}
 $("country").addEventListener("change",()=>{const c=$("country").value;$("branch").replaceChildren(option("","All authorised branches"),...locations.filter(l=>!c||l.country_name===c).map(l=>option(l.location_code,l.location_name+" ("+l.location_code+")")));renderScope()});
 $("branch").addEventListener("change",renderScope);
-$("tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(!b)return;for(const x of $("tabs").querySelectorAll("button"))x.classList.toggle("active",x===b);$("sectionTitle").textContent=labels[b.dataset.tab];$("overviewCards").classList.toggle("hidden",b.dataset.tab!=="overview");$("panelText").textContent=b.dataset.tab==="office"?"Office access will require separate server-side verification; this preview does not unlock restricted records.":"This section is a development placeholder. Branch-scoped records and reports will be connected only after secure database policies and testing.";});
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(!b)return;for(const x of $("tabs").querySelectorAll("button"))x.classList.toggle("active",x===b);$("sectionTitle").textContent=labels[b.dataset.tab];$("overviewCards").classList.toggle("hidden",b.dataset.tab!=="overview");$("customerRows").classList.toggle("hidden",b.dataset.tab!=="customers");$("panelText").textContent=b.dataset.tab==="office"?"Office access will require separate server-side verification; this preview does not unlock restricted records.":"This section is a development placeholder. Branch-scoped records and reports will be connected only after secure database policies and testing.";});
 async function enter(user){
 if(!user){showSignedOut();status("Please sign in.");return}
 const {data:memberships,error:mError}=await db.from("gogo_management_memberships").select("role,active").eq("user_id",user.id).eq("active",true).in("role",["global_owner","global_admin"]);
@@ -78,7 +78,7 @@ if(!memberships?.length){showSignedOut();status("This account has not yet been a
 const {data,error}=await db.from("gogo_locations").select("location_code,location_name,country_name,currency_code,active").order("country_name").order("location_name");
 if(error)throw error;locations=data||[];currentUser=user;
 $("loginPanel").classList.add("hidden");$("workspace").classList.remove("hidden");$("logout").classList.remove("hidden");
-renderFilters();status("Signed in as "+(user.email||"authorised user")+". Read-only global development preview.");
+renderFilters();await loadCustomers();status("Signed in as "+(user.email||"authorised user")+". Read-only global development preview.");
 }
 $("loginForm").addEventListener("submit",async e=>{e.preventDefault();status("Signing in…");const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});$("password").value="";if(error){status(error.message);return}try{await enter(data.user)}catch(ex){showSignedOut();status(ex.message)}});
 $("logout").addEventListener("click",async()=>{await db.auth.signOut();showSignedOut();status("Signed out.")});
