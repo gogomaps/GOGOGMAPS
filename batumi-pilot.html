@@ -757,7 +757,7 @@ async function loadBusinesses() {
     const categories=[...new Set(places.map(p=>p.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const categoryFilter=$("categoryFilter");categoryFilter.replaceChildren(new Option("All categories",""));for(const category of categories)categoryFilter.add(new Option(category,category));
     $("status").textContent = places.length ? "Showing "+places.length+" business listings from GoGo Maps." : "No published Batumi businesses yet. Business applications are open.";
 
-    render();if(places.length)openDetail(places.find(p=>isActivePromotion(p.promotion))?.id||places[0].id);
+    buildIndex();render();if(places.length)openDetail(places.find(p=>isActivePromotion(p.promotion))?.id||places[0].id);
   } catch (error) {
     $("status").textContent =
       "Database connection failed: " + error.message;
