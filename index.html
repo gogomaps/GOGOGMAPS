@@ -1,23 +1,829 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GoGo Maps | Explore more. Discover local.</title><meta name="description" content="Explore nearby places and discover participating businesses with GoGo Maps."><style>
-:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#15243b}*{box-sizing:border-box}body{margin:0;background:#f7fafc}a{color:inherit}header{display:flex;align-items:center;justify-content:space-between;padding:20px max(5vw,calc((100vw - 1100px)/2));background:white;gap:15px;flex-wrap:wrap}.brand{font-size:26px;font-weight:850;color:#1669bc;text-decoration:none}.brand span{color:#f4a421}nav{display:flex;gap:20px;flex-wrap:wrap}nav a{text-decoration:none;font-weight:650}.hero{background:linear-gradient(125deg,#0e4e9b,#1a86c7);color:white;padding:85px 5vw 95px;text-align:center}.eyebrow{letter-spacing:.16em;font-size:12px;font-weight:800}.hero h1{font-size:clamp(37px,6vw,68px);max-width:800px;margin:16px auto}.hero p{max-width:610px;margin:0 auto 30px;line-height:1.7;font-size:18px}.button{display:inline-block;background:#ffc348;color:#1c2c3f;padding:16px 25px;border-radius:11px;font-weight:800;text-decoration:none;margin:5px}.button.alt{background:white}main{max-width:1100px;margin:auto;padding:48px 20px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}.card{background:white;border-radius:16px;padding:25px;box-shadow:0 8px 24px #173c6010}.card h3{margin:8px 0}.card p{line-height:1.6;color:#536579}.card a{color:#0d63a9;font-weight:700}.note{border-left:4px solid #f4b13e;background:#fff8e9;padding:16px 22px;border-radius:8px;margin:30px 0}.section{margin:55px 0}.section h2{font-size:32px}footer{background:#112b48;color:#dbe8f4;padding:35px 5vw;text-align:center}footer a{color:white}small{line-height:1.6}
-@media(min-width:900px){.hero{text-align:left;padding:100px max(5vw,calc((100vw - 1100px)/2))}.hero h1,.hero p{margin-left:0}.hero h1{max-width:740px}}.brand{display:flex;align-items:center;gap:12px}.brand img{width:52px;height:52px;object-fit:contain}.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 86% 20%,#38bdf855,transparent 30%),radial-gradient(circle at 12% 85%,#f7bb3650,transparent 28%),linear-gradient(125deg,#092b54,#1269ac 70%,#1187ba)}.hero:after{content:"";position:absolute;width:360px;height:360px;border:55px solid #ffffff10;border-radius:50%;right:-100px;top:30px;pointer-events:none}.button{box-shadow:0 8px 22px #061b2c30;transition:transform .2s,box-shadow .2s}.button:hover{transform:translateY(-3px);box-shadow:0 12px 25px #061b2c45}.card{border:1px solid #e7eef5;transition:transform .2s,box-shadow .2s}.card:hover{transform:translateY(-4px);box-shadow:0 14px 32px #173c6020}.city-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}.city-tile{display:flex;align-items:center;gap:14px;text-decoration:none;background:#fff;border:1px solid #dce8f3;border-radius:15px;padding:18px;box-shadow:0 8px 22px #173c600b}.city-tile:hover{border-color:#1680c4}.city-mark{width:54px;height:54px;flex:none;display:grid;place-items:center;border-radius:16px;background:linear-gradient(135deg,#1258a5,#15a7d2);color:white;font-weight:900;font-size:20px}.city-tile strong{display:block}.city-tile small{color:#64748b}.management{background:linear-gradient(135deg,#eaf4ff,#f8fbff);border:1px solid #cfe4f6;border-radius:22px;padding:30px}.section>p{line-height:1.7;color:#526477}header{position:sticky;top:0;z-index:20;box-shadow:0 3px 14px #092d4510}nav a:hover{color:#1375b7}html{scroll-behavior:smooth}</style><style>
-:root{--navy:#0b2444;--blue:#176fc2;--gold:#ffbc42}
-body{background:#f3f7fc;color:var(--navy)}
-header{padding-top:15px;padding-bottom:15px;border-bottom:1px solid #e5eef7}
-nav a{font-size:14px;transition:color .2s}nav a:hover{color:#1478c6}
-.hero{min-height:580px;display:flex;flex-direction:column;justify-content:center;background:radial-gradient(circle at 82% 48%,#55baf052 0 12%,transparent 12.5%),radial-gradient(circle at 82% 48%,transparent 0 19%,#a9e2ff2b 19.2% 19.6%,transparent 19.9%),radial-gradient(circle at 82% 48%,transparent 0 29%,#a9e2ff1f 29.2% 29.6%,transparent 29.9%),linear-gradient(120deg,#071d39,#0b4c87 65%,#178cbd)}
-.hero:after{width:280px;height:280px;right:8%;top:22%;border:2px dashed #ffffff40;opacity:.7}
-.hero .eyebrow{color:#ffcb6b}.hero h1{letter-spacing:-.045em;line-height:1.1}.hero p{color:#e2f2ff}
-.button{border-radius:12px}.button:first-of-type{background:var(--gold)}
-.section h2{letter-spacing:-.03em}.card{min-height:185px;border-radius:20px;padding:28px}.card h3{font-size:20px}
-.city-tile{border-radius:18px}.city-mark{box-shadow:0 5px 18px #1258a52e}
-.management{background:linear-gradient(125deg,#d9efff,#f7fbff);box-shadow:0 10px 30px #1b518112}
-footer{padding:46px 5vw}a:focus-visible,button:focus-visible{outline:3px solid #f5b631;outline-offset:3px}
-@media(max-width:700px){header{padding:14px 20px}nav{gap:12px}nav a{font-size:13px}.hero{min-height:480px;padding:70px 22px}.hero h1{font-size:42px}.section{margin:40px 0}}
-</style></head><body><header><a class="brand" href="#top"><img src="/logo.png" alt="GoGo Maps logo">GoGo <span>Maps</span></a><nav><a href="#explore">Explore</a><a href="#business">For businesses</a><a href="/cities.html">Our Cities</a><a href="#support">Help &amp; Support</a><a href="/global-private-business-manager-dev.html">Head Office</a><a href="/branch-manager-dev.html">Branch Office</a><a href="/batumi-pilot.html">Live Map</a></nav></header>
-<div id="top" class="hero"><div class="eyebrow">DISCOVER • EXPLORE • GO</div><h1>Your city. Your next discovery.</h1><p>Find places nearby, explore local businesses and discover special offers from participating GoGo Maps partners.</p><a class="button" href="/batumi-pilot.html">Open Batumi Map →</a><a class="button alt" href="#business">Advertise with us</a></div>
-<main><section id="explore" class="section"><h2>Explore with GoGo Maps</h2><div class="cards"><article class="card"><h3>📍 Nearby places</h3><p>Find cafés, restaurants, pharmacies, shops and useful services around you.</p><a href="/batumi-pilot.html">Explore the map →</a></article><article class="card"><h3>🎟️ Local offers</h3><p>Participating businesses will be able to publish offers and share QR codes for easy access.</p><span>Coming in a future release</span></article><article class="card"><h3>🌍 More cities</h3><p>GoGo Maps is planning to expand across Georgia and other international destinations.</p><span>Expansion in development</span></article></div></section>
-<section id="business" class="section"><h2>Put your business on the map</h2><p>GoGo Maps is preparing a local advertising network for cafés, restaurants, hotels, shops and services. Explore our live Batumi map today; business registration and advertising tools are being prepared for launch.</p><p><a class="button" href="/batumi-pilot.html">Preview the Batumi map →</a></p><div class="cards"><div class="card"><h3>Be discovered</h3><p>Help visitors find your location and business information.</p></div><div class="card"><h3>Share specials</h3><p>Promote relevant offers to customers exploring your city.</p></div><div class="card"><h3>Measure interest</h3><p>Planned tools include QR campaign analytics and verified offer redemptions.</p></div></div></section>
-<section class="section" id="network"><h2>One network. More cities.</h2><p>Discover GoGo Maps destinations. Batumi is active; other cities are preparing for launch.</p><div class="city-grid"><a class="city-tile" href="/batumi-pilot.html"><span class="city-mark">BG</span><span><strong>Batumi GO</strong><small>Georgia · Explore map</small></span></a><a class="city-tile" href="/cities.html"><span class="city-mark">TG</span><span><strong>Tbilisi GO</strong><small>Georgia · Coming soon</small></span></a><a class="city-tile" href="/cities.html"><span class="city-mark">JG</span><span><strong>Johannesburg GO</strong><small>South Africa · Coming soon</small></span></a><a class="city-tile" href="/cities.html"><span class="city-mark">MG</span><span><strong>Moscow GO</strong><small>Russia · Coming soon</small></span></a><a class="city-tile" href="/cities.html"><span class="city-mark">TG</span><span><strong>Tashkent GO</strong><small>Uzbekistan · Coming soon</small></span></a></div><p><a class="button" href="/cities.html">Browse all destinations →</a></p></section><section class="section management"><h2>GoGo Maps management</h2><p>One connected network for Head Office and local branch teams. Sign-in is restricted to authorised staff.</p><a class="button" href="/global-private-business-manager-dev.html">Head Office →</a><a class="button alt" href="/branch-manager-dev.html">Branch Office →</a></section>
-<section id="support" class="section"><h2>Help &amp; Support</h2><p>Need assistance, want to advertise, or have a concern about an offer?</p><div class="note"><strong>Support channels are being set up.</strong><br>Official GoGo Maps email and WhatsApp contact details will appear here once activated. We will not publish an unverified address or number.</div><p>For now, you can explore the existing Batumi map using the button above.</p></section></main>
-<footer><strong>GoGo Maps</strong><br><small>Business registration, QR rewards and support channels are in development.<br>© GoGo Maps · <a href="#top">Back to top</a></small></footer></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoGoMaps.org | Discover Batumi Businesses and Exclusive Specials</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f6f9;
+  color: #173145;
+}
+
+header {
+  background: #102c40;
+  color: white;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+h1 { margin: 0; font-size: 23px; }
+header small { color: #c6dce9; }
+
+button, .btn {
+  background: #0876b9;
+  color: white;
+  border: none;
+  padding: 11px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+button.secondary {
+  background: #e1edf4;
+  color: #153a50;
+}
+  .languagePicker {
+  display: flex;
+  align-items: center;
+  background: #7030a0;
+  border-radius: 50px;
+  padding: 4px 12px;
+}
+  #languageGlobe {
+  display: flex;
+align-items: center;
+  margin-right: 5px;
+}
+  #languageSelect {
+  background: transparent;
+  color: white;
+  border: none;
+  border-radius: 50px; 
+  padding: 12px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 155px;
+}
+
+#languageSelect option {
+  background: white;
+  color: #222222;
+}
+#allBtn {
+  background: #1769aa;
+  color: white;
+}
+
+#specialBtn {
+  background: #d62828;
+  color: white;
+}
+
+#nearBtn {
+  background: #238b45;
+  color: white;
+}
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.wrap {
+  max-width: 1300px;
+  margin: auto;
+  padding: 14px;
+}
+
+.notice {
+  background: #fff3d2;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.toolbar input {
+  flex: 1;
+  min-width: 170px;
+  padding: 12px;
+  border: 1px solid #bed0dc;
+  border-radius: 8px;
+  font-size: 15px;
+}
+.search-container {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 220px;
+}
+
+.search-container input {
+  width: 100%;
+  padding-right: 45px;
+  box-sizing: border-box;
+}
+
+.search-container button {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 5px;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 330px 1fr;
+  gap: 12px;
+}
+
+.panel {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+#map {
+  height: 70vh;
+  border-radius: 12px;
+}
+
+.item {
+  border-bottom: 1px solid #e4e9ee;
+  padding: 12px 4px;
+  cursor: pointer;
+}
+
+.item h3 {
+  margin: 0 0 5px;
+  font-size: 16px;
+}
+
+.muted {
+  color: #607887;
+  font-size: 13px;
+}
+
+.pill {
+  background: #ffe0df;
+  color: #a32626;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.red { color: #b72b2b; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: #0009;
+  z-index: 2000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+
+.modal.open { display: flex; }
+
+.dialog {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  width: 100%;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.offer {
+  background: #fff5f3;
+  border: 1px solid #f0c7c3;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+
+.promo-media {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.media-cell {
+  border: 1px solid #dce6ed;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  min-width: 0;
+}
+
+.media-cell img,
+.media-cell video {
+  width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+}
+
+.media-cell h4 {
+  font-size: 12px;
+}
+
+.pin {
+  width: 26px;
+  height: 36px;
+  filter: drop-shadow(0 2px 2px #555);
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #687b88;
+}
+
+@media(max-width: 760px) {
+  .layout { grid-template-columns: 1fr; }
+  #map { height: 48vh; }
+  .panel { max-height: 38vh; }
+}
+body{background:#edf4fb;font-family:system-ui,Segoe UI,sans-serif}header{min-height:225px;align-items:flex-start;padding:30px 4vw;background:radial-gradient(ellipse at 85% 95%,#ffab7d99,transparent 40%),linear-gradient(115deg,#072c61,#117cbd 70%,#ff9b7c)}.pilot-brand{display:flex;align-items:center;gap:18px}.pilot-brand img{width:100px;height:100px;object-fit:contain}.pilot-brand h1{font-size:clamp(28px,4vw,50px);letter-spacing:-.04em}.pilot-brand small{color:#fff}.office-link{color:white;text-decoration:none;font-weight:800;padding:12px;background:#0a2b56;border-radius:12px}.languagePicker{background:#fff}.languagePicker #languageSelect{color:#092c5c}.languagePicker svg{stroke:#092c5c}.wrap{max-width:1800px;margin:-17px auto 0;position:relative}.notice{font-size:12px;background:#fff7dd}.toolbar{padding:12px;background:#072c58;border-radius:16px;box-shadow:0 8px 25px #072c5840}.toolbar button{min-height:48px;border-radius:12px;font-weight:800}.search-container input{min-height:48px;border:0;border-radius:12px}#allBtn{background:linear-gradient(#17a7ff,#0063ed);color:white}#specialBtn{background:linear-gradient(#ff5258,#e5002a)}#nearBtn{background:linear-gradient(#1de070,#00a644);color:white}.layout{grid-template-columns:minmax(250px,29%) minmax(330px,1fr) minmax(270px,28%);gap:10px}.panel,#map,.featured{height:70vh;min-height:510px;border-radius:15px;box-shadow:0 6px 25px #123a6622}.panel{max-height:none}.featured{background:white;padding:18px;overflow:auto}.featured-label{font-weight:900;color:#1375b8;letter-spacing:.12em;font-size:12px;border-bottom:1px solid #e0eaf4;padding-bottom:12px}.featured img{width:100%;border-radius:12px}.featured p{line-height:1.5}.directions-link{display:inline-block;padding:12px 15px;background:#0679ed;color:white;text-decoration:none;border-radius:10px;margin-top:14px}.item:hover{background:#edf6ff}.pill{background:#e91d3b;color:white}@media(max-width:1100px){.layout{grid-template-columns:minmax(260px,38%) 1fr}.featured{grid-column:1/-1;height:auto;min-height:150px;max-height:400px}}@media(max-width:850px){header{min-height:180px;padding:18px}.pilot-brand img{width:70px;height:70px}.pilot-brand h1{font-size:26px}.layout{grid-template-columns:1fr}.panel{height:auto;min-height:140px;max-height:300px}#map{height:55vh;min-height:350px}.featured{display:none}.search-container{flex-basis:100%}.wrap{margin:-7px auto 0}}.contact-link{display:inline-block;margin:8px 0;padding:10px 15px;border:1px solid #159d56;border-radius:10px;color:#087b3c;text-decoration:none;font-weight:800}.featured .offer{border-left:5px solid #e82743}.featured .promo-media{grid-template-columns:repeat(3,minmax(0,1fr))}.featured .media-cell{font-size:12px}.item{border-left:3px solid transparent}.item:hover{border-left-color:#0679ed}.featured-label:before{content:"● ";color:#16a65a}.join-strip{background:#fff;border-radius:12px;padding:12px 18px;margin-bottom:9px;box-shadow:0 4px 18px #123b5f19;display:flex;align-items:center;gap:15px;justify-content:space-between;flex-wrap:wrap}.join-strip a{background:#086fe1;color:white;border-radius:9px;padding:10px 15px;font-weight:800;text-decoration:none}</style>
+<style id="pamphlet-inspired-design">
+header{position:relative;overflow:hidden;min-height:250px;background:radial-gradient(circle at 82% 20%,#ffdb9d 0,transparent 28%),radial-gradient(circle at 55% 100%,#f68e9a 0,transparent 35%),linear-gradient(125deg,#06439d 0%,#139fe5 52%,#ffc4a0 100%);border-bottom:7px solid #0459ba}
+header:after{content:"";position:absolute;bottom:0;left:0;right:0;height:54px;background:linear-gradient(180deg,transparent,#0054a866);pointer-events:none}
+.pilot-brand{position:relative;z-index:1;background:#ffffffdf;padding:14px 23px;border-radius:20px;box-shadow:0 8px 26px #082d6640}
+.pilot-brand h1{color:#092c66;text-shadow:0 1px #fff}
+.pilot-brand small,#headerSubtitle{color:#113c70;font-weight:800}
+#headerSubtitle{display:block;margin-top:16px;background:#ffffffd6;padding:7px 12px;border-radius:9px}
+.category-shortcuts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:13px 0}
+.category-shortcut{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px solid white;box-shadow:0 4px 14px #1a4e8a2c;border-radius:16px;padding:12px 5px;background:white;color:#103565;min-height:100px;font-weight:900;text-transform:uppercase;font-size:12px}
+.category-shortcut span{display:grid;place-items:center;border-radius:50%;height:58px;width:58px;color:white;font-size:28px;box-shadow:0 4px 12px #14599b44}
+.category-shortcut:nth-child(1) span{background:#ff8618}.category-shortcut:nth-child(2) span{background:#0679fa}.category-shortcut:nth-child(3) span{background:#f32741}.category-shortcut:nth-child(4) span{background:#09a778}.category-shortcut:nth-child(5) span{background:#a441ca}.category-shortcut:nth-child(6) span{background:#e9a900}
+.category-shortcut:hover,.category-shortcut:focus-visible{outline:3px solid #009cfc;transform:translateY(-2px)}
+.join-strip{border:2px solid #b8dcfa}.join-strip a{background:linear-gradient(#0bc857,#008c31);font-size:16px}
+.featured-label{background:#07366d;color:white;padding:12px;border-radius:9px;letter-spacing:.06em}
+.item{border-radius:12px;margin-bottom:6px}.item:hover{background:#e7f4ff}
+@media(max-width:850px){.category-shortcuts{grid-template-columns:repeat(3,1fr)}.pilot-brand{padding:8px}.pilot-brand h1{font-size:24px}header{min-height:190px}}
+@media(max-width:430px){.category-shortcuts{grid-template-columns:repeat(3,1fr);gap:5px}.category-shortcut{font-size:10px;min-height:85px}.category-shortcut span{width:46px;height:46px;font-size:22px}}
+</style><style id="gogo-home-redesign">
+header{display:grid!important;grid-template-columns:minmax(230px,1fr) minmax(270px,1.5fr) minmax(230px,1fr);align-items:center!important;gap:18px;min-height:295px!important;padding:25px 3vw!important;background:linear-gradient(90deg,#ffffffec 0%,#ffffff80 28%,#ffffff1a 56%,#ffffffd9 100%),linear-gradient(135deg,#81c6f5,#fdb88f 56%,#b4d9ff)!important}
+header:after{display:none}.pilot-brand{background:none!important;box-shadow:none!important;padding:0!important;display:block!important}.pilot-brand img{width:115px;height:115px;float:left;margin-right:10px}.pilot-brand h1{font-size:clamp(23px,2.5vw,39px)!important;color:#05306e}.pilot-brand small{color:#075c9d!important}.hero-headline{color:#e50919;font-weight:1000;font-size:clamp(27px,3.4vw,52px);line-height:1.05;text-shadow:2px 3px 0 #ffffffb8;letter-spacing:-.03em;text-align:left}.hero-right{display:flex;align-items:center;flex-direction:column;gap:10px}.gogo-right-logo{display:flex;align-items:center;gap:10px;color:#042f73;font-size:clamp(25px,3vw,44px);font-weight:1000;line-height:1}.gogo-right-logo img{height:94px;width:94px;object-fit:contain}.company-slogan{font-size:20px;font-weight:1000;color:#052f70;letter-spacing:.11em}.languagePicker{background:#ffffffeb!important;border:1px solid #b7d2ed;padding:0 7px!important;box-shadow:0 3px 10px #13447a28}.languagePicker svg{stroke:#0b3768}.languagePicker select{color:#143c6d!important;min-width:100px!important;padding:6px!important;font-size:12px!important}.city-row{display:flex;justify-content:center;margin:12px auto 20px}.city-row label{font-weight:900;color:#073b72;margin-right:12px;align-self:center}.city-row select{border:2px solid #0c6bbf;background:#06346e;color:white;border-radius:12px;padding:12px 18px;font-size:17px;font-weight:800;max-width:260px}.city-row option{background:white;color:#093a70}.join-strip{display:flex!important;justify-content:flex-start!important;gap:20px;align-items:center!important;background:#fff!important}.join-strip a{order:-1;flex:0 0 auto;background:linear-gradient(#0dca5c,#008a33)!important;padding:19px 23px!important;border-radius:12px;font-size:18px!important}.join-strip strong{font-size:20px;color:#d42029}.join-strip div div{font-size:15px!important;font-weight:700!important;color:#173b64!important}.item{padding:7px!important;margin:3px 0!important;border-bottom:1px solid #d9e6f2!important}.item h3{font-size:14px!important;margin:2px 0!important}.item p{font-size:11px!important;margin:3px 0!important}.item img{height:62px!important;width:80px!important;float:left;margin:0 10px 5px 0!important}.item:after{content:"";display:block;clear:both}.panel{max-height:76vh!important;padding:9px!important}.layout{grid-template-columns:minmax(240px,290px) minmax(0,1fr) minmax(225px,290px)!important;gap:9px!important}.featured{min-width:0!important}.featured img{max-width:100%}.directions-link,.directions-mini{display:inline-block!important;background:#0878d9!important;color:white!important;padding:7px 10px!important;border-radius:8px!important;text-decoration:none!important;font-weight:850!important;font-size:12px!important;margin-top:5px!important}.index-menu{display:none;background:white;border:2px solid #c9e4f8;border-radius:13px;padding:16px;margin:0 0 12px;box-shadow:0 6px 20px #174c8520}.index-menu.open{display:block}.index-menu button{margin:4px;background:#e9f5ff;color:#073c77;border:1px solid #b9d8f4}.category-shortcut[data-category=""] span{background:#f0a500!important}@media(max-width:980px){header{grid-template-columns:1fr 1fr!important}.hero-headline{grid-column:1/-1;grid-row:2;text-align:center}.layout{grid-template-columns:minmax(210px,32%) 1fr!important}.featured{grid-column:1/-1}.hero-right{align-items:flex-end}}@media(max-width:640px){header{grid-template-columns:1fr!important;text-align:center}.pilot-brand img{float:none}.hero-headline{grid-column:auto;grid-row:auto;text-align:center}.hero-right{align-items:center}.join-strip{flex-direction:column!important;text-align:center}.join-strip a{order:0}.layout{grid-template-columns:1fr!important}.featured{grid-column:auto}.city-row{flex-wrap:wrap}}
+</style></head>
+
+<body>
+
+<header><div class="pilot-brand"><img src="/logo.png" alt="Batumi GO logo"><h1>Batumi GO</h1><small>Explore Batumi · Find it · Go!</small></div><div class="hero-headline">DISCOVER LOCAL BUSINESSES<br>&amp; EXCLUSIVE SPECIALS!</div><div class="hero-right"><div class="gogo-right-logo"><img src="/logo.png" alt="GoGo Maps symbol"><span>GoGo<br>Maps</span></div><div class="company-slogan">SCAN, GRAB, GO.</div><div class="languagePicker"><span id="languageGlobe" aria-hidden="true">🌐</span><select id="languageSelect" aria-label="Choose language"><option value="en">English</option><option value="ka">ქართული</option></select></div></div><span id="headerSubtitle" hidden>Discover local businesses and exclusive specials</span><button id="privateOfficeBtn" hidden disabled>Private office</button></header>
+
+<main class="wrap"><div class="city-row"><label for="citySelect">Select Your City</label><select id="citySelect"><option value="batumi">📍 Batumi Go</option><option value="tbilisi" disabled>🏙️ Tbilisi Go — coming soon</option><option value="moscow" disabled>🏙️ Moscow Go — coming soon</option><option value="johannesburg" disabled>🌍 Johannesburg Go — coming soon</option><option value="mauritius" disabled>🏝️ Mauritius Go — coming soon</option><option value="tushkan" disabled>🌆 Tushkan Go — coming soon</option></select></div>
+
+<div class="join-strip"><div><strong>Own a business in Batumi?</strong><div style="font-size:13px;color:#526b80;margin-top:4px">Apply for a free listing. Promotional advertising is optional and reviewed before publication.</div></div> <a href="/batumi-owner.html">Register your business — FREE →</a></div><div class="notice" id="versionNotice">
+  Batumi pilot · Business listings and promotions come from the GoGo Maps database.
+</div>
+
+<nav class="category-shortcuts" aria-label="Explore Batumi categories"><button class="category-shortcut" type="button" data-category="Restaurant"><span>🍴</span>Restaurants & cafés</button><button class="category-shortcut" type="button" data-category="Hotel"><span>🛏</span>Hotels</button><button class="category-shortcut" type="button" data-category="Shop"><span>🛍</span>Shops</button><button class="category-shortcut" type="button" data-category="Pharmacy"><span>✚</span>Pharmacies</button><button class="category-shortcut" type="button" data-category="Tourist service"><span>📷</span>Attractions</button><button class="category-shortcut" type="button" data-category="" id="indexButton"><span>☷</span>Business index</button></nav><div id="indexMenu" class="index-menu" aria-label="Business category index"><strong>Quick business index</strong><div id="indexEntries"></div></div><div class="toolbar">
+  <div class="search-container">
+  <input id="search" type="search" autocomplete="off" spellcheck="false"
+  aria-label="Search business listings"
+  data-translate-placeholder="searchPlaceholder"
+  placeholder="Search businesses and promotions in English">
+
+  <button id="searchBtn" type="button" aria-label="Search businesses">
+    🔍
+  </button>
+</div>
+  
+  
+  
+  
+  
+ <button id="allBtn" class="secondary" data-translate="allBusinesses">
+  All businesses
+</button>
+  <button id="specialBtn" data-translate="specialOffers">
+  🔴 Special Offers
+</button>
+ <select id="categoryFilter" aria-label="Filter by business category" style="border:0;border-radius:12px;padding:12px;background:white;color:#0b345c;font-weight:750;min-width:160px"><option value="">All categories</option></select>
+ <button id="nearBtn" class="secondary" data-translate="findMe">
+  Find me
+</button>
+</div>
+
+<div class="layout">
+  <div class="panel">
+<p id="status" data-translate="connecting">Connecting to database...</p>
+    <b id="count"></b>
+    <div id="results"></div>
+  </div>
+
+  <div id="map"></div><aside class="featured"><div class="featured-label">BUSINESS SPOTLIGHT</div><div id="spotlight"><h2>Explore Batumi</h2><p>Select a business or map marker to view its information and offers.</p></div></aside>
+</div>
+
+</main>
+
+<footer id="footerText">
+  Batumi GO · Map © OpenStreetMap contributors
+</footer>
+
+<div id="detailModal" class="modal">
+  <div class="dialog">
+    <button class="secondary" id="closeBtn"
+      style="float:right">✕</button>
+    <div id="detail"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const supabaseUrl =
+  "https://adifwwlmdditbdxjwbjn.supabase.co";
+
+const supabaseKey =
+  "sb_publishable_mecjWlqMoO21dY33bzbDUw_KB7mSxuH";
+
+const $ = id => document.getElementById(id);
+
+let places = [];
+let specialsOnly = false;
+  const translations = {
+    en: {
+      headerSubtitle: "Discover local businesses and exclusive specials",
+      languageLabel: "🌐 Select Language:",
+       privateOffice: "🔒 Private office — coming soon",
+    versionNotice: "BATUMI PILOT · Business listings are loaded from the GoGo Maps database. Confirm offers directly with the business.",
+    searchPlaceholder: "Search businesses and promotions in English",
+    allBusinesses: "All businesses",
+    specialOffers: "🔴 Special Offers",
+    findMe: "Find me",
+    connecting: "Connecting to database...",
+    footer: "Batumi GO pilot · Map © OpenStreetMap contributors"
+  },
+
+  ka: {
+ headerSubtitle: "აღმოაჩინეთ ადგილობრივი ბიზნესები და სპეციალური შეთავაზებები",
+    languageLabel: "🌐 აირჩიეთ ენა:",
+    privateOffice: "🔒 პირადი ოფისი — მალე",
+    versionNotice: "ბათუმის საპილოტე ვერსია · ბიზნესების ინფორმაცია იტვირთება GoGo Maps-ის ბაზიდან. შეთავაზებები გადაამოწმეთ უშუალოდ ბიზნესთან.",
+    searchPlaceholder: "მოძებნეთ ბიზნესები და შეთავაზებები",
+    allBusinesses: "ყველა ბიზნესი",
+    specialOffers: "🔴 სპეციალური შეთავაზებები",
+    findMe: "ჩემი მდებარეობა",
+    connecting: "მონაცემთა ბაზასთან დაკავშირება...",
+    footer: "Batumi GO · რუკა © OpenStreetMap-ის მონაწილეები"
+  }
+};
+    let currentLanguage = localStorage.getItem("gogoLanguage") || "en";
+$("languageSelect").value = currentLanguage;
+$("languageSelect").addEventListener("change", function () {
+  currentLanguage = this.value;
+  localStorage.setItem("gogoLanguage", currentLanguage);
+  applyTranslations();
+});
+  function applyTranslations() {
+  const t = translations[currentLanguage] || translations.en;
+
+  $("headerSubtitle").textContent = t.headerSubtitle;
+  $("privateOfficeBtn").textContent = t.privateOffice;
+  $("versionNotice").textContent = t.versionNotice;
+
+  $("search").placeholder = t.searchPlaceholder;
+
+  $("allBtn").textContent = t.allBusinesses;
+  $("specialBtn").textContent = t.specialOffers;
+  $("nearBtn").textContent = t.findMe;
+
+  $("footerText").textContent = t.footer;
+}
+  applyTranslations();
+const map = L.map("map").setView(
+  [41.6168, 41.6367], 13
+);
+
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap contributors"
+  }
+).addTo(map);
+
+const layer = L.layerGroup().addTo(map);
+
+function makePin(color) {
+  return L.divIcon({
+    className: "",
+    html: `
+      <svg class="pin" viewBox="0 0 26 36"
+        xmlns="http://www.w3.org/2000/svg">
+        <path d="M13 1 C6 1 1 6 1 13
+          C1 22 13 35 13 35
+          C13 35 25 22 25 13
+          C25 6 20 1 13 1 Z"
+          fill="${color}"
+          stroke="white" stroke-width="2"/>
+        <circle cx="13" cy="13" r="5" fill="white"/>
+      </svg>`,
+    iconSize: [26, 36],
+    iconAnchor: [13, 35]
+  });
+}
+
+const bluePin = makePin("#1677ff");
+const redPin = makePin("#e32636");
+
+async function getData(table) {
+  const response = await fetch(
+    supabaseUrl + "/rest/v1/" + table + "?select=*",
+    { headers: { apikey: supabaseKey } }
+  );
+
+  if (!response.ok) {
+    throw new Error(table + ": HTTP " + response.status);
+  }
+
+  return response.json();
+}
+
+function safeUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function addText(parent, tag, value) {
+  const element = document.createElement(tag);
+  element.textContent = value || "";
+  parent.appendChild(element);
+  return element;
+}
+
+function openDetail(id) {
+  const place = places.find(p => p.id === id);
+  if (!place) return;
+
+  const detail = $("detail");
+  detail.replaceChildren();
+
+  addText(detail, "h2", place.name);
+  addText(detail, "p",
+    (place.category || "Business") + " · " +
+    (place.address || "Batumi")
+  );
+if (place.photo_url) {
+  const photo = document.createElement("img");
+  photo.src = safeUrl(place.photo_url);
+  photo.alt = "Business photo";
+  photo.style.cssText = "width:100%;max-height:250px;object-fit:cover;border-radius:10px;margin:10px 0;";
+  detail.appendChild(photo);
+}
+  if (place.phone) {
+    const phone = String(place.phone).replace(/[^+0-9]/g,"");const a=document.createElement("a");a.href="tel:"+phone;a.textContent="☎ Call "+place.phone;a.className="contact-link";detail.appendChild(a);
+  }
+
+  if (isActivePromotion(place.promotion)) {
+    const offer = document.createElement("div");
+    offer.className = "offer";
+
+    addText(offer, "h2",
+      "🔴 " + place.promotion.offer_title);
+
+    addText(offer, "p",
+      place.promotion.offer_description);
+
+    addText(offer, "p",
+      "Valid: " + place.promotion.start_date +
+      " to " + place.promotion.end_date);
+
+    detail.appendChild(offer);
+
+    const media = document.createElement("div");
+    media.className = "promo-media";
+
+    const logoCell = document.createElement("div");
+    logoCell.className = "media-cell";
+    addText(logoCell, "h4", "Business logo");
+    addText(logoCell, "p", "Coming soon");
+
+    const videoCell = document.createElement("div");
+    videoCell.className = "media-cell";
+    addText(videoCell, "h4", "Promotional video");
+
+    const videoUrl = safeUrl(
+      place.promotion.promotional_video_url
+    );
+
+    if (videoUrl) {
+      const link = document.createElement("a");
+      link.href = videoUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Watch video";
+      videoCell.appendChild(link);
+    } else {
+      addText(videoCell, "p", "Coming soon");
+    }
+
+    const qrCell = document.createElement("div");
+    qrCell.className = "media-cell";
+    addText(qrCell, "h4", "Show QR in store");
+    addText(qrCell, "p", "Coming soon");
+
+    media.append(logoCell, videoCell, qrCell);
+    detail.appendChild(media);
+
+    const photoUrls = (
+  Array.isArray(place.promotion.promotional_photo_urls)
+    ? place.promotion.promotional_photo_urls
+    : []
+).map(safeUrl).filter(Boolean);
+
+if (photoUrls.length === 0) {
+  const oldPhoto = safeUrl(place.promotion.promotional_photo_url);
+  if (oldPhoto) photoUrls.push(oldPhoto);
+}
+
+if (photoUrls.length > 0) {
+  const gallery = document.createElement("div");
+  gallery.style.cssText = "margin-top:12px;width:100%;";
+
+  const mainPhoto = document.createElement("img");
+  let currentPhoto = 0;
+
+  mainPhoto.src = photoUrls[0];
+  mainPhoto.alt = "Promotional photograph";
+  mainPhoto.style.cssText =
+    "width:100%;height:240px;object-fit:contain;border-radius:10px;background:#f3f3f3;";
+
+  const thumbnails = document.createElement("div");
+  thumbnails.style.cssText =
+    "display:flex;gap:6px;overflow-x:auto;margin-top:8px;";
+
+  function showPhoto(index) {
+    currentPhoto = index;
+    mainPhoto.src = photoUrls[index];
+
+    Array.from(thumbnails.children).forEach((thumb, i) => {
+      thumb.style.border = i === index
+        ? "3px solid #1769aa"
+        : "2px solid transparent";
+    });
+  }
+
+  photoUrls.slice(0, 5).forEach((url, index) => {
+    const thumb = document.createElement("img");
+    thumb.src = url;
+    thumb.alt = "Photo " + (index + 1);
+    thumb.style.cssText =
+      "width:58px;height:58px;object-fit:cover;border-radius:6px;cursor:pointer;flex-shrink:0;";
+
+    thumb.addEventListener("click", () => showPhoto(index));
+    thumbnails.appendChild(thumb);
+  });
+
+  let touchStartX = 0;
+
+  mainPhoto.addEventListener("touchstart", event => {
+    touchStartX = event.changedTouches[0].screenX;
+  }, { passive: true });
+
+  mainPhoto.addEventListener("touchend", event => {
+    const difference =
+      event.changedTouches[0].screenX - touchStartX;
+
+    if (Math.abs(difference) > 40) {
+      const next = difference < 0
+        ? (currentPhoto + 1) % thumbnails.children.length
+        : (currentPhoto - 1 + thumbnails.children.length)
+          % thumbnails.children.length;
+
+      showPhoto(next);
+    }
+  });
+
+  gallery.append(mainPhoto, thumbnails);
+  detail.appendChild(gallery);
+  showPhoto(0);
+}
+  }
+
+  const spotlight=$("spotlight");spotlight.replaceChildren(detail.cloneNode(true));const directions=document.createElement("a");if(Number.isFinite(place.lat)&&Number.isFinite(place.lon)){directions.className="directions-link";directions.textContent="Get directions ↗";directions.href="https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(place.lat+","+place.lon);directions.target="_blank";directions.rel="noopener noreferrer";spotlight.appendChild(directions)}if(matchMedia("(max-width:850px)").matches)$("detailModal").classList.add("open");
+}
+
+function isActivePromotion(p){if(!p)return false;const today=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tbilisi",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());return (!p.start_date||String(p.start_date).slice(0,10)<=today)&&(!p.end_date||String(p.end_date).slice(0,10)>=today)}
+
+function buildIndex(){const wrap=$("indexEntries");wrap.replaceChildren();const values=[...new Set(places.map(p=>p.category).filter(Boolean))].sort();for(const category of values){const button=document.createElement("button");button.type="button";button.textContent=category;button.onclick=()=>{$("search").value="";const select=$("categoryFilter");select.value=[...select.options].some(o=>o.value===category)?category:"";$("indexMenu").classList.remove("open");render()};wrap.appendChild(button)}if(!values.length)wrap.textContent="Businesses will appear here as they register."}
+function render() {
+  layer.clearLayers();
+  $("results").replaceChildren();
+
+  const query = $("search").value.trim().toLowerCase();
+  const categoryChoice=$("categoryFilter").value;
+
+  const found = places.filter(p => {
+    if (specialsOnly && !isActivePromotion(p.promotion)) return false;
+    if(categoryChoice && p.category!==categoryChoice)return false;
+
+    return [
+      p.name,
+      p.category,
+      p.address,
+      p.promotion?.offer_title,
+      p.promotion?.offer_description
+    ].some(value =>
+      String(value || "").normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim().includes(query)
+    );
+  });
+
+  $("count").textContent =
+    found.length + " listings · " +
+    found.filter(p => isActivePromotion(p.promotion)).length +
+    " active specials";
+if(!found.length){const empty=document.createElement("div");empty.style.cssText="padding:20px;line-height:1.6;color:#36516e";const title=document.createElement("strong");title.textContent=specialsOnly?"No active special offers are available right now.":query?"No businesses match your search.":"Batumi businesses are being added.";const note=document.createElement("p");note.textContent=specialsOnly?"Try All Businesses to see the complete directory.":query?"Try another business name or category.":"Own a local business? Apply to be included in the directory.";empty.append(title,note);if(!query&&!specialsOnly){const a=document.createElement("a");a.href="/batumi-owner.html";a.textContent="Apply to list your business →";a.style.cssText="color:#086fcb;font-weight:800";empty.append(a)}$("results").append(empty)}
+found.sort((a, b) => Number(isActivePromotion(b.promotion)) - Number(isActivePromotion(a.promotion)));
+  found.forEach(place => {
+    const item = document.createElement("div");
+    item.className = "item";
+
+
+
+    
+    if(safeUrl(place.photo_url)){const thumbnail=document.createElement("img");thumbnail.src=safeUrl(place.photo_url);thumbnail.alt="Photo of "+place.name;thumbnail.loading="lazy";thumbnail.style.cssText="width:100%;height:115px;object-fit:cover;border-radius:10px;margin-bottom:8px";item.appendChild(thumbnail)}
+    const heading = addText(item, "h3", place.name);
+heading.style.color = isActivePromotion(place.promotion) ? "#d62828" : "#1769aa";
+    if (isActivePromotion(place.promotion)) {
+      const badge = document.createElement("span");
+      badge.className = "pill";
+      badge.textContent = " SPECIAL";
+      heading.appendChild(badge);
+    }
+
+    const category = addText(
+      item, "p",
+      (place.category || "Business") +
+      " · " + (place.address || "Batumi")
+    );
+    category.className = "muted";
+
+    if (isActivePromotion(place.promotion)) {
+      const offer = addText(
+        item, "strong",
+        place.promotion.offer_title
+      );
+      offer.className = "red";
+    }
+
+    item.onclick = () => {
+      if (
+        Number.isFinite(place.lat) &&
+        Number.isFinite(place.lon)
+      ) {
+        map.setView([place.lat, place.lon], 16);
+      }
+      openDetail(place.id);
+    };
+
+    if(Number.isFinite(place.lat)&&Number.isFinite(place.lon)){const dir=document.createElement("a");dir.className="directions-mini";dir.textContent="📍 Get Directions";dir.href="https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(place.lat+","+place.lon);dir.target="_blank";dir.rel="noopener noreferrer";dir.onclick=event=>event.stopPropagation();item.appendChild(dir)}$("results").appendChild(item);
+
+    if (
+      !Number.isFinite(place.lat) ||
+      !Number.isFinite(place.lon)
+    ) return;
+
+    L.marker(
+      [place.lat, place.lon],
+      { icon: isActivePromotion(place.promotion) ? redPin : bluePin }
+    )
+    .addTo(layer)
+    .on("click", () => openDetail(place.id));
+  });
+}
+
+async function loadBusinesses() {
+  try {
+    const [businessesResult,promotionsResult,publishedResult,ownersResult,ownerAdsResult] = await Promise.allSettled([getData("businesses"),getData("promotions"),getData("gogo_batumi_published"),getData("gogo_batumi_owner_listings"),getData("gogo_batumi_owner_ads")]);
+    const businesses=businessesResult.status==="fulfilled"?businessesResult.value:[];
+    const promotions=promotionsResult.status==="fulfilled"?promotionsResult.value:[];
+    const approvedBatumi=publishedResult.status==="fulfilled"?publishedResult.value:[];
+    const ownerListings=ownersResult.status==="fulfilled"?ownersResult.value:[];const ownerAds=ownerAdsResult.status==="fulfilled"?ownerAdsResult.value:[];if(ownersResult.status==="rejected")console.warn("Owner listings unavailable",ownersResult.reason);if(ownerAdsResult.status==="rejected")console.warn("Owner advertisements unavailable",ownerAdsResult.reason);
+    if(publishedResult.status==="rejected")throw publishedResult.reason;
+
+    places = businesses.map(business => {
+      const matchingPromotions = promotions
+        .filter(p => p.business_id === business.id && isActivePromotion(p))
+        .sort((a, b) =>
+          String(b.start_date).localeCompare(
+            String(a.start_date)
+          )
+        );
+
+      return {
+        id: business.id,
+        name: business.name,
+        category: business.category,
+        address: business.address,
+        phone: business.phone,
+        photo_url: business.photo_url,
+        lat: business.latitude == null
+          ? null : Number(business.latitude),
+        lon: business.longitude == null
+          ? null : Number(business.longitude),
+        promotion: matchingPromotions[0] || null
+      };
+    });
+
+    for(const b of approvedBatumi){places.push({id:b.id,name:b.business_name,category:b.category,address:b.address,phone:b.phone,photo_url:b.photo_url,lat:Number(b.latitude),lon:Number(b.longitude),promotion:null})}
+    for(const b of ownerListings){const active=ownerAds.filter(a=>a.business_id===b.id && a.status==="approved" && a.payment_confirmed && isActivePromotion({start_date:a.start_date,end_date:a.end_date}));const ad=active[0];places.push({id:b.id,name:b.business_name,category:b.category,address:b.address,phone:b.phone,photo_url:b.photo_url,lat:Number(b.latitude),lon:Number(b.longitude),promotion:ad?{offer_title:ad.title,offer_description:ad.description,start_date:ad.start_date,end_date:ad.end_date,promotional_photo_url:ad.photo_url,promotional_video_url:ad.video_url}:null})}
+    const categories=[...new Set(places.map(p=>p.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const categoryFilter=$("categoryFilter");categoryFilter.replaceChildren(new Option("All categories",""));for(const category of categories)categoryFilter.add(new Option(category,category));
+    $("status").textContent = places.length ? "Showing "+places.length+" business listings from GoGo Maps." : "No published Batumi businesses yet. Business applications are open.";
+
+    buildIndex();render();if(places.length)openDetail(places.find(p=>isActivePromotion(p.promotion))?.id||places[0].id);
+  } catch (error) {
+    $("status").textContent =
+      "Database connection failed: " + error.message;
+  }
+}
+
+// Filter on typing, Enter, and clicking the search icon.
+function runSearch() {
+  specialsOnly = false;
+  render();
+}
+$("search").addEventListener("input", runSearch);
+$("search").addEventListener("search", runSearch);
+$("search").addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    runSearch();
+    $("search").blur();
+  }
+});
+$("searchBtn").onclick = runSearch;
+$("categoryFilter").addEventListener("change",render);document.querySelectorAll(".category-shortcut").forEach(button=>button.addEventListener("click",()=>{if(button.id==="indexButton"){const panel=$("indexMenu");panel.classList.toggle("open");panel.scrollIntoView({behavior:"smooth",block:"nearest"});return;}const select=$("categoryFilter");const requested=button.dataset.category;const match=[...select.options].find(o=>o.value===requested);select.value=match?requested:"";if(requested==="Restaurant"&&!match){$("search").value="restaurant";}else if(requested==="Tourist service"&&!match){$("search").value="tour";}else{$("search").value="";}specialsOnly=false;render();document.querySelector(".toolbar").scrollIntoView({behavior:"smooth",block:"start"})}));
+$("allBtn").onclick = () => {
+  specialsOnly = false;
+  render();
+};
+
+$("specialBtn").onclick = () => {
+  specialsOnly = true;
+  render();
+};
+
+$("nearBtn").onclick = () => {
+  if (!navigator.geolocation) {
+    alert("Location is not available.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      map.setView([
+        position.coords.latitude,
+        position.coords.longitude
+      ], 17);
+      if (window.myLocationDot) map.removeLayer(window.myLocationDot);
+      window.myLocationDot =
+      L.circleMarker(
+  [position.coords.latitude, position.coords.longitude],
+  {
+    radius: 9,
+    color: "#ffffff",
+    weight: 3,
+    fillColor: "#1685ff",
+    fillOpacity: 1
+  }
+).addTo(map).bindPopup("You are here");
+    },
+    () => alert("Location permission unavailable.")
+  );
+};
+
+$("closeBtn").onclick = () => {
+  $("detailModal").classList.remove("open");
+};
+
+loadBusinesses();
+</script>
+</body>
+</html>
