@@ -289,7 +289,7 @@ body{background:#edf4fb;font-family:system-ui,Segoe UI,sans-serif}header{min-hei
 
 <main class="wrap">
 
-<div class="join-strip"><div><strong>Own a business in Batumi?</strong><div style="font-size:13px;color:#526b80;margin-top:4px">Apply for a free listing. Promotional advertising is optional and reviewed before publication.</div></div> <a href="/batumi-register.html">Register your business — FREE →</a></div><div class="notice" id="versionNotice">
+<div class="join-strip"><div><strong>Own a business in Batumi?</strong><div style="font-size:13px;color:#526b80;margin-top:4px">Apply for a free listing. Promotional advertising is optional and reviewed before publication.</div></div> <a href="/batumi-owner.html">Register your business — FREE →</a></div><div class="notice" id="versionNotice">
   Batumi pilot · Business listings and promotions come from the GoGo Maps database.
 </div>
 
@@ -652,7 +652,7 @@ function render() {
     found.length + " listings · " +
     found.filter(p => isActivePromotion(p.promotion)).length +
     " active specials";
-if(!found.length){const empty=document.createElement("div");empty.style.cssText="padding:20px;line-height:1.6;color:#36516e";const title=document.createElement("strong");title.textContent=specialsOnly?"No active special offers are available right now.":query?"No businesses match your search.":"Batumi businesses are being added.";const note=document.createElement("p");note.textContent=specialsOnly?"Try All Businesses to see the complete directory.":query?"Try another business name or category.":"Own a local business? Apply to be included in the directory.";empty.append(title,note);if(!query&&!specialsOnly){const a=document.createElement("a");a.href="/batumi-register.html";a.textContent="Apply to list your business →";a.style.cssText="color:#086fcb;font-weight:800";empty.append(a)}$("results").append(empty)}
+if(!found.length){const empty=document.createElement("div");empty.style.cssText="padding:20px;line-height:1.6;color:#36516e";const title=document.createElement("strong");title.textContent=specialsOnly?"No active special offers are available right now.":query?"No businesses match your search.":"Batumi businesses are being added.";const note=document.createElement("p");note.textContent=specialsOnly?"Try All Businesses to see the complete directory.":query?"Try another business name or category.":"Own a local business? Apply to be included in the directory.";empty.append(title,note);if(!query&&!specialsOnly){const a=document.createElement("a");a.href="/batumi-owner.html";a.textContent="Apply to list your business →";a.style.cssText="color:#086fcb;font-weight:800";empty.append(a)}$("results").append(empty)}
 found.sort((a, b) => Number(isActivePromotion(b.promotion)) - Number(isActivePromotion(a.promotion)));
   found.forEach(place => {
     const item = document.createElement("div");
@@ -714,10 +714,11 @@ heading.style.color = isActivePromotion(place.promotion) ? "#d62828" : "#1769aa"
 
 async function loadBusinesses() {
   try {
-    const [businessesResult,promotionsResult,publishedResult] = await Promise.allSettled([getData("businesses"),getData("promotions"),getData("gogo_batumi_published")]);
+    const [businessesResult,promotionsResult,publishedResult,ownersResult,ownerAdsResult] = await Promise.allSettled([getData("businesses"),getData("promotions"),getData("gogo_batumi_published"),getData("gogo_batumi_owner_listings"),getData("gogo_batumi_owner_ads")]);
     const businesses=businessesResult.status==="fulfilled"?businessesResult.value:[];
     const promotions=promotionsResult.status==="fulfilled"?promotionsResult.value:[];
     const approvedBatumi=publishedResult.status==="fulfilled"?publishedResult.value:[];
+    const ownerListings=ownersResult.status==="fulfilled"?ownersResult.value:[];const ownerAds=ownerAdsResult.status==="fulfilled"?ownerAdsResult.value:[];
     if(publishedResult.status==="rejected")throw publishedResult.reason;
 
     places = businesses.map(business => {
@@ -745,6 +746,7 @@ async function loadBusinesses() {
     });
 
     for(const b of approvedBatumi){places.push({id:b.id,name:b.business_name,category:b.category,address:b.address,phone:b.phone,photo_url:b.photo_url,lat:Number(b.latitude),lon:Number(b.longitude),promotion:null})}
+    for(const b of ownerListings){const active=ownerAds.filter(a=>a.business_id===b.id && a.status==="approved" && a.payment_confirmed && isActivePromotion({start_date:a.start_date,end_date:a.end_date}));const ad=active[0];places.push({id:b.id,name:b.business_name,category:b.category,address:b.address,phone:b.phone,photo_url:b.photo_url,lat:Number(b.latitude),lon:Number(b.longitude),promotion:ad?{offer_title:ad.title,offer_description:ad.description,start_date:ad.start_date,end_date:ad.end_date,promotional_photo_url:ad.photo_url,promotional_video_url:ad.video_url}:null})}
     const categories=[...new Set(places.map(p=>p.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const categoryFilter=$("categoryFilter");categoryFilter.replaceChildren(new Option("All categories",""));for(const category of categories)categoryFilter.add(new Option(category,category));
     $("status").textContent = places.length ? "Showing "+places.length+" business listings from GoGo Maps." : "No published Batumi businesses yet. Business applications are open.";
 
