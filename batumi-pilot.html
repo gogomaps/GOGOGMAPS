@@ -735,7 +735,7 @@ async function loadBusinesses() {
     const businesses=businessesResult.status==="fulfilled"?businessesResult.value:[];
     const promotions=promotionsResult.status==="fulfilled"?promotionsResult.value:[];
     const approvedBatumi=publishedResult.status==="fulfilled"?publishedResult.value:[];
-    const ownerListings=ownersResult.status==="fulfilled"?ownersResult.value:[];const ownerAds=ownerAdsResult.status==="fulfilled"?ownerAdsResult.value:[];
+    const ownerListings=ownersResult.status==="fulfilled"?ownersResult.value:[];const ownerAds=ownerAdsResult.status==="fulfilled"?ownerAdsResult.value:[];if(ownersResult.status==="rejected")console.warn("Owner listings unavailable",ownersResult.reason);if(ownerAdsResult.status==="rejected")console.warn("Owner advertisements unavailable",ownerAdsResult.reason);
     if(publishedResult.status==="rejected")throw publishedResult.reason;
 
     places = businesses.map(business => {
@@ -789,7 +789,7 @@ $("search").addEventListener("keydown", event => {
   }
 });
 $("searchBtn").onclick = runSearch;
-$("categoryFilter").addEventListener("change",render);document.querySelectorAll(".category-shortcut").forEach(button=>button.addEventListener("click",()=>{const select=$("categoryFilter");const requested=button.dataset.category;const match=[...select.options].find(o=>o.value===requested);select.value=match?requested:"";specialsOnly=false;render();document.querySelector(".toolbar").scrollIntoView({behavior:"smooth",block:"start"})}));
+$("categoryFilter").addEventListener("change",render);document.querySelectorAll(".category-shortcut").forEach(button=>button.addEventListener("click",()=>{const select=$("categoryFilter");const requested=button.dataset.category;const match=[...select.options].find(o=>o.value===requested);select.value=match?requested:"";if(requested==="Restaurant"&&!match){$("search").value="restaurant";}else if(requested==="Tourist service"&&!match){$("search").value="tour";}else{$("search").value="";}specialsOnly=false;render();document.querySelector(".toolbar").scrollIntoView({behavior:"smooth",block:"start"})}));
 $("allBtn").onclick = () => {
   specialsOnly = false;
   render();
